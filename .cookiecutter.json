@@ -1,0 +1,12 @@
+{
+  "_template": "gh:cjolowicz/cookiecutter-hypermodern-python",
+  "author": "Paul Everitt",
+  "development_status": "Development Status :: 3 - Alpha",
+  "email": "pauleveritt@me.com",
+  "friendly_name": "Themester",
+  "github_user": "pauleveritt",
+  "license": "MIT",
+  "package_name": "themester",
+  "project_name": "themester",
+  "version": "0.0.0"
+}
