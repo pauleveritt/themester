@@ -35,6 +35,7 @@ Themester
    :target: https://github.com/psf/black
    :alt: Black
 
+Make Python web theme development fun, portable, and fast.
 
 Features
 --------
