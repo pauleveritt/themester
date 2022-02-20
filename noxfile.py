@@ -19,7 +19,6 @@ except ImportError:
     {sys.executable} -m pip install nox-poetry"""
     raise SystemExit(dedent(message)) from None
 
-
 package = "themester"
 python_versions = ["3.10", "3.9"]
 nox.needs_version = ">= 2021.6.6"
@@ -28,7 +27,6 @@ nox.options.sessions = (
     "safety",
     "mypy",
     "tests",
-    "typeguard",
     "xdoctest",
     "docs-build",
 )
@@ -152,14 +150,6 @@ def coverage(session: Session) -> None:
 
 
 @session(python=python_versions)
-def typeguard(session: Session) -> None:
-    """Runtime type checking using Typeguard."""
-    session.install(".")
-    session.install("pytest", "typeguard", "pygments")
-    session.run("pytest", f"--typeguard-packages={package}", *session.posargs)
-
-
-@session(python=python_versions)
 def xdoctest(session: Session) -> None:
     """Run examples with xdoctest."""
     if session.posargs:
@@ -182,7 +172,7 @@ def docs_build(session: Session) -> None:
         args.insert(0, "--color")
 
     session.install(".")
-    session.install("sphinx", "sphinx-click", "furo")
+    session.install("sphinx", "furo")
 
     build_dir = Path("docs", "_build")
     if build_dir.exists():
@@ -196,7 +186,7 @@ def docs(session: Session) -> None:
     """Build and serve the documentation with live reloading on file changes."""
     args = session.posargs or ["--open-browser", "docs", "docs/_build"]
     session.install(".")
-    session.install("sphinx", "sphinx-autobuild", "sphinx-click", "furo")
+    session.install("sphinx", "sphinx-autobuild", "furo")
 
     build_dir = Path("docs", "_build")
     if build_dir.exists():

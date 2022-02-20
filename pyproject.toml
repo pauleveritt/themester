@@ -17,7 +17,6 @@ Changelog = "https://github.com/pauleveritt/themester/releases"
 
 [tool.poetry.dependencies]
 python = "^3.7"
-click = "^8.0.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
