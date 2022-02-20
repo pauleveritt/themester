@@ -3,6 +3,6 @@ import themester
 
 
 def test_importable() -> None:
-    """Can we import the package?"""
+    """Can we import the package."""
 
     assert themester
