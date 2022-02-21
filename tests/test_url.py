@@ -5,7 +5,7 @@ from typing import cast
 import pytest
 
 from themester.nullster import static_src
-from themester.protocols import ResourceLike
+from themester.protocols import Resource
 from themester.resources import Site
 from themester.url import find_resource
 from themester.url import normalize
@@ -197,9 +197,9 @@ def test_relative_path_static(current: PurePath, expected: PurePath) -> None:
 def test_normalize(current: PurePath | str, expected: PurePath, site: Site) -> None:
     """Test passing resources, paths, and strings."""
     if current == "site":
-        path = normalize(cast(ResourceLike, site))
+        path = normalize(cast(Resource, site))
     elif current == "/f1/d2":
-        f1 = cast(dict[str, ResourceLike], site["f1"])
+        f1 = cast(dict[str, Resource], site["f1"])
         path = normalize(f1["d2"])
     else:
         path = normalize(current)
@@ -233,14 +233,14 @@ def test_relative(
     site: Site,
 ) -> None:
     """More of the integrated test."""
-    s = cast(ResourceLike, site)
+    s = cast(Resource, site)
     path = relative(s, target, static_prefix=static_prefix, suffix=suffix)
     assert expected == path
 
 
 def test_factory_relative_path(site: Site) -> None:
     """Use the registry and a factory to get the path."""
-    f1 = cast(dict[str, ResourceLike], site["f1"])
+    f1 = cast(dict[str, Resource], site["f1"])
     resource = f1["d2"]
     srp = RelativePath(resource=resource)
     target = PurePath("/foo/bar/baz")
@@ -257,7 +257,7 @@ def test_factory_static_relative_path(site: Site) -> None:
     )
     resource = site["d1"]
     srp = StaticRelativePath(
-        resource=cast(ResourceLike, resource),
+        resource=cast(Resource, resource),
         static_src=this_static_src,
     )
     target = PurePath("images/favicon.ico")

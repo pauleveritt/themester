@@ -6,11 +6,11 @@ from typing import Any
 
 from markupsafe import Markup
 
-from themester.protocols import ResourceLike
+from themester.protocols import Resource
 
 
 @dataclass
-class Site(dict[str, ResourceLike | dict[str, ResourceLike]]):
+class Site(dict[str, Resource | dict[str, Resource]]):
     """Top-level resource at the root of a site."""
 
     title: str

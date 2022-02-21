@@ -12,14 +12,14 @@ from typing import Optional
 
 from hopscotch import injectable
 
-from themester.protocols import ResourceLike
+from themester.protocols import Resource
 from themester.resources import Site
 
 ROOT = PurePath("/")
 ROOT_PATHS = ("/", "/index", PurePath("/"), PurePath("/index"))
 
 
-def find_resource(root: Site, path: PurePath) -> ResourceLike:
+def find_resource(root: Site, path: PurePath) -> Resource:
     """Given a path-like string, walk the tree and return object.
 
     Resources in a resource tree can be found with path-like lookups.
@@ -66,10 +66,10 @@ def find_resource(root: Site, path: PurePath) -> ResourceLike:
                 raise KeyError(m)
         except StopIteration:
             break
-    return cast(ResourceLike, result)
+    return cast(Resource, result)
 
 
-def parents(resource: ResourceLike) -> Iterable[ResourceLike]:
+def parents(resource: Resource) -> Iterable[Resource]:
     """Parents of a resource, reversed: parent, then grandparent, etc.
 
     Args:
@@ -79,7 +79,7 @@ def parents(resource: ResourceLike) -> Iterable[ResourceLike]:
         A tuple of zero (root is target) or more resources.
     """
 
-    these_parents: List[ResourceLike] = []
+    these_parents: List[Resource] = []
     parent = resource.parent
     while parent is not None:
         these_parents.append(parent)
@@ -170,7 +170,7 @@ def relative_path(
     return v
 
 
-def resource_path(resource: ResourceLike) -> PurePath:
+def resource_path(resource: Resource) -> PurePath:
     """Return a path representation of resource.
 
     The resource should be location-aware, meaning, it has a ``name`` and a ``parent`` attributes.
@@ -205,7 +205,7 @@ def resource_path(resource: ResourceLike) -> PurePath:
     return path
 
 
-def normalize(item: ResourceLike | PurePath | str) -> PurePath:
+def normalize(item: Resource | PurePath | str) -> PurePath:
     """
     Convert current or target to a PurePath.
 
@@ -224,7 +224,7 @@ def normalize(item: ResourceLike | PurePath | str) -> PurePath:
         normalized_item = item
     elif hasattr(item, "parent"):
         # Crappy way to check if something is a ResourceLike
-        normalized_item = resource_path(cast(ResourceLike, item))
+        normalized_item = resource_path(cast(Resource, item))
         if isinstance(item, Mapping):
             # Add /index
             normalized_item = normalized_item / "index"
@@ -238,8 +238,8 @@ def normalize(item: ResourceLike | PurePath | str) -> PurePath:
 
 
 def relative(
-    current: ResourceLike | PurePath | str,
-    target: ResourceLike | PurePath | str,
+    current: Resource | PurePath | str,
+    target: Resource | PurePath | str,
     static_prefix: Optional[PurePath] = None,
     suffix: Optional[str] = None,
 ) -> PurePath:
@@ -346,12 +346,12 @@ class RelativePath:
     Convert path to resource to a relative path.
     """
 
-    resource: ResourceLike
+    resource: Resource
     suffix: str = ".html"  # TODO Get this from config
 
     def __call__(
         self,
-        target: ResourceLike | PurePath | str,
+        target: Resource | PurePath | str,
     ) -> PurePath:
         """
         Convert a resource path to a relative path with a suffix.
@@ -376,11 +376,14 @@ class StaticRelativePath:
     Convert path to static asset to a relative path.
     """
 
-    resource: ResourceLike
+    resource: Resource
     static_src: StaticSrc
     static_dest: StaticDest = field(default_factory=StaticDest)
 
-    def __call__(self, target: PurePath) -> PurePath:
+    def __call__(
+        self,
+        target: Resource | PurePath | str,
+    ) -> PurePath:
         """Convert an asset path to a relative path.
 
         The configs etc. will point at a static asset in the theme file.

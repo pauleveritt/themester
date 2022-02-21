@@ -3,11 +3,11 @@ from __future__ import annotations
 from typing import Protocol
 
 
-class ResourceLike(Protocol):
+class Resource(Protocol):
     """A location-aware node in the resource tree."""
 
     name: str | None
-    parent: ResourceLike | None
+    parent: Resource | None
     title: str | None
 
 
