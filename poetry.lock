@@ -369,7 +369,7 @@ gitdb = ">=4.0.1,<5"
 
 [[package]]
 name = "hopscotch"
-version = "0.1.4"
+version = "0.1.5"
 description = "Type-oriented registry with dependency injection."
 category = "main"
 optional = false
@@ -1316,8 +1316,8 @@ gitpython = [
     {file = "GitPython-3.1.27.tar.gz", hash = "sha256:1c885ce809e8ba2d88a29befeb385fcea06338d3640712b59ca623c220bb5704"},
 ]
 hopscotch = [
-    {file = "hopscotch-0.1.4-py3-none-any.whl", hash = "sha256:05195e7127cb12513fb3d63d9b7e478c06996ef5a4fa04b1eb9c1b1c0de62adb"},
-    {file = "hopscotch-0.1.4.tar.gz", hash = "sha256:e64697927166ea9076e611e0d940252c3456aaeba05143b05cc8ea7f7317b5d2"},
+    {file = "hopscotch-0.1.5-py3-none-any.whl", hash = "sha256:1ae9cc70f57df4c366f78d25957534294a1bf7caf210bbcf6fabceea1bb6f45a"},
+    {file = "hopscotch-0.1.5.tar.gz", hash = "sha256:91b405be29882b1f9fc6f45365b09be46cb3b839c3a4e5025ad5965988453873"},
 ]
 htm = [
     {file = "htm-0.1.1-py3-none-any.whl", hash = "sha256:7917b83997828e09f0808e3a70d4e873dc9a491552effff63fae91295aa4e14b"},
