@@ -3,4 +3,4 @@ from pathlib import Path
 
 from themester.url import StaticSrc
 
-static_src = StaticSrc(here=__file__, source=Path("static"))
+static_src = StaticSrc(here=Path(__file__), source=Path("static"))

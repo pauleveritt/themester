@@ -12,7 +12,7 @@ def site() -> Site:
     f1 = Folder(name="f1", parent=s, title="F1")
     s["f1"] = f1
     d1 = Document(name="d1", parent=s, title="D1")
-    s["d1"] = d1
+    s["d1"] = d1  # type: ignore
     body = Markup("<p>This is <em>great</em>.</p>")
     d2 = Document(name="d2", parent=f1, body=body, title="D2")
     f1["d2"] = d2
