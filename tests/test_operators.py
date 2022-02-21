@@ -1,26 +1,13 @@
 """Test the custom operators in Themester."""
 from pathlib import PurePath
-from typing import cast
 
 import pytest
 from hopscotch import Registry
 
-from themester import url
 from themester.operators import AsDict
 from themester.operators import PathTo
 from themester.operators import StaticPathTo
 from themester.protocols import Resource
-from themester.resources import Site
-
-
-@pytest.fixture(scope="session")
-def registry(site: Site) -> Registry:
-    r = Registry()
-    r.register(site)
-    r.scan(url)
-    f1 = cast(dict[str, Resource], site["f1"])
-    r.register(f1["d2"], kind=Resource)
-    return r
 
 
 def test_pathto_setup() -> None:

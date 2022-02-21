@@ -1,6 +1,11 @@
+from typing import cast
+
 import pytest
+from hopscotch import Registry
 from markupsafe import Markup
 
+from themester import url
+from themester.protocols import Resource
 from themester.resources import Document
 from themester.resources import Folder
 from themester.resources import Site
@@ -22,3 +27,13 @@ def site() -> Site:
     f3["d3"] = d3
 
     return s
+
+
+@pytest.fixture(scope="session")
+def registry(site: Site) -> Registry:
+    r = Registry()
+    r.register(site)
+    r.scan(url)
+    f1 = cast(dict[str, Resource], site["f1"])
+    r.register(f1["d2"], kind=Resource)
+    return r
