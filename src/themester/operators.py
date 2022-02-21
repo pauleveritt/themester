@@ -1,3 +1,4 @@
+"""Custom Themester operators for use in injection."""
 from dataclasses import asdict
 from dataclasses import dataclass
 from pathlib import PurePath
@@ -20,14 +21,14 @@ class PathTo:
 
     @staticmethod
     def get_path_function(registry: Registry) -> RelativePath | StaticRelativePath:
-        """Isolate this so PathTo and StaticPathTo can share"""
+        """Isolate this so PathTo and StaticPathTo can share."""
         return registry.get(RelativePath)
 
     def __call__(
         self,
         registry: Registry,
     ) -> PurePath | str | None:
-
+        """Run the operator."""
         if isinstance(self.lookup_key, str):
             # Make a PurePath then look up
             site = registry.get(Site)
@@ -48,11 +49,11 @@ class PathTo:
 
 @dataclass(frozen=True)
 class StaticPathTo(PathTo):
-    """Calculate a path to a static asset"""
+    """Calculate a path to a static asset."""
 
     @staticmethod
     def get_path_function(registry: Registry) -> StaticRelativePath:
-        """Isolate this so PathTo and StaticPathTo can share"""
+        """Isolate this so PathTo and StaticPathTo can share."""
         return registry.get(StaticRelativePath)
 
 
@@ -67,6 +68,5 @@ class AsDict:
         registry: Registry,
     ) -> dict[str, Any]:
         """Get the instance from the registry, convert to dict."""
-
         value = registry.get(self.lookup_type)
         return asdict(value)

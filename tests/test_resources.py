@@ -1,3 +1,4 @@
+"""Test the built-in resources."""
 from themester.resources import Site
 
 

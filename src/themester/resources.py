@@ -19,12 +19,13 @@ class Site(dict[str, Resource | dict[str, Resource]]):
     body: Markup | None = None
 
     def __post_init__(self) -> None:
+        """Setup the dict."""
         super().__init__()
 
 
 @dataclass(frozen=True)
 class Folder(dict[str, Any]):
-    """A folder in the resource tree"""
+    """A folder in the resource tree."""
 
     name: str
     parent: Site | Folder
@@ -32,12 +33,13 @@ class Folder(dict[str, Any]):
     body: Markup | None = None
 
     def __post_init__(self) -> None:
+        """Setup the dict."""
         super().__init__()
 
 
 @dataclass(frozen=True)
 class Document:
-    """A leaf in the resource tree"""
+    """A leaf in the resource tree."""
 
     name: str
     parent: Site | Folder

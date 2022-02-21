@@ -1,3 +1,4 @@
+"""Test the url and path helper functions."""
 from pathlib import Path
 from pathlib import PurePath
 from typing import cast
@@ -45,8 +46,7 @@ def test_find_resource(path: PurePath, expected: str, site: Site) -> None:
 
 
 def test_find_resource_missing_slash(site: Site) -> None:
-    """Missing slash at path beginning should give ValueError"""
-
+    """Missing slash at path beginning should give ValueError."""
     path = PurePath("f1/XXX")
     with pytest.raises(ValueError) as exc:
         find_resource(site, path)
@@ -63,7 +63,6 @@ def test_find_resource_missing_slash(site: Site) -> None:
 )
 def test_find_resource_failed(path: PurePath, expected: str, site: Site) -> None:
     """Provide a bogus path and get a LookupError."""
-
     with pytest.raises(KeyError) as exc:
         find_resource(site, path)
     assert expected == exc.value.args[0]
@@ -218,9 +217,9 @@ def test_normalize(current: PurePath | str, expected: PurePath, site: Site) -> N
         (
             PurePath("/f1/d2"),
             PurePath("icon.png"),
-            PurePath("/tmp"),
+            PurePath("/xxx"),
             None,
-            PurePath("/tmp/icon.png"),
+            PurePath("/xxx/icon.png"),
         ),
     ),
 )
@@ -248,12 +247,19 @@ def test_factory_relative_path(site: Site) -> None:
     assert PurePath("../foo/bar/baz.html") == result
 
 
-def test_factory_static_relative_path(site: Site) -> None:
+@pytest.fixture
+def nullster_path() -> Path:
+    """Get the filesystem location of the nullster package."""
     from themester import nullster
 
+    return Path(nullster.__file__)
+
+
+def test_factory_static_relative_path(site: Site, nullster_path: Path) -> None:
+    """Get the relative path to a static asset."""
     this_static_src = StaticSrc(
-        here=Path(nullster.__file__),
-        source=Path("../src/themester/nullster/static/nullster.css"),
+        here=nullster_path,
+        source=nullster_path.parent / "static/nullster.css",
     )
     resource = site["d1"]
     srp = StaticRelativePath(
@@ -266,7 +272,8 @@ def test_factory_static_relative_path(site: Site) -> None:
 
 
 def test_here_one_level() -> None:
-    this_source = Path(".")  # themabaster/tests/factories
+    """Resolve a path one level deep."""
+    this_source = Path(".")  # nullster/tests/factories
     here = StaticSrc(here=Path(__file__), source=this_source)
     expected = Path(__file__).parent
     assert expected == here.source
@@ -276,6 +283,7 @@ def test_here_one_level() -> None:
 
 
 def test_here_two_levels() -> None:
+    """Resolve a path two levels deep."""
     this_source = Path("..")  # themabaster/tests
     here = StaticSrc(here=Path(__file__), source=this_source)
     expected = Path(__file__).parent.parent
@@ -286,6 +294,7 @@ def test_here_two_levels() -> None:
 
 
 def test_here_three_levels() -> None:
+    """Resolve a path three levels deep."""
     this_source = Path("../..")  # themabaster
     here = StaticSrc(here=Path(__file__), source=this_source)
     expected = Path(__file__).parent.parent.parent
@@ -296,7 +305,8 @@ def test_here_three_levels() -> None:
     assert Path("tests/test_url.py") == result
 
 
-def test_here_themabaster() -> None:
-    target = Path("../src/themester/nullster/static/nullster.css")
+def test_here_nullster(nullster_path: Path) -> None:
+    """The nullster theme should provide a static asset."""
+    target = nullster_path.parent / "static/nullster.css"
     result = static_src(target)
     assert Path("nullster.css") == result

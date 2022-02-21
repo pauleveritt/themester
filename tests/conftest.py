@@ -1,3 +1,4 @@
+"""Test fixtures."""
 from typing import cast
 
 import pytest
@@ -13,6 +14,7 @@ from themester.resources import Site
 
 @pytest.fixture(scope="session")
 def site() -> Site:
+    """A fixture for a site with some resources in a tree."""
     s = Site(title="Themester Site")
     f1 = Folder(name="f1", parent=s, title="F1")
     s["f1"] = f1
@@ -31,6 +33,7 @@ def site() -> Site:
 
 @pytest.fixture(scope="session")
 def registry(site: Site) -> Registry:
+    """A fixture for a configured registry."""
     r = Registry()
     r.register(site)
     r.scan(url)
