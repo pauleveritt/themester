@@ -321,7 +321,7 @@ class StaticSrc:
         target_path = parent.joinpath(self.source)
         self.source = target_path.resolve()
 
-    def __call__(self, target: Path) -> PurePosixPath | None:
+    def __call__(self, target: Path) -> PurePosixPath | Path | None:
         """Make the target relative to the site's static directory."""
         # Get a Path() pointed at the caller's directory
         frame = inspect.stack()[1]
@@ -389,7 +389,7 @@ class StaticRelativePath:
 
     resource: Resource
     static_src: StaticSrc
-    static_dest: str = field(default_factory=StaticDest)
+    static_dest: StaticDest = field(default_factory=StaticDest)
 
     def __call__(
         self,

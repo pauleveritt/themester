@@ -3,13 +3,14 @@ from dataclasses import dataclass
 from pathlib import PurePosixPath
 
 import pytest
-from hopscotch import Registry
 from hopscotch import injectable
+from hopscotch import Registry
 
-from themester.operators import AsDict, static_path_to
-from themester.operators import PathTo
-from themester.operators import StaticPathTo
+from themester.operators import AsDict
 from themester.operators import path_to
+from themester.operators import PathTo
+from themester.operators import static_path_to
+from themester.operators import StaticPathTo
 from themester.protocols import Resource
 from themester.resources import Site
 
@@ -40,6 +41,7 @@ def test_pathto_good_path(site_registry: Registry) -> None:
 @dataclass
 class Target:
     """Injectable to test path_to field operator."""
+
     this_path: PurePosixPath = path_to(PurePosixPath("/f1/d2"))
     this_static_path: PurePosixPath = static_path_to(PurePosixPath("/f1/d2"))
 

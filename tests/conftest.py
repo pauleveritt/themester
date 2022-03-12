@@ -3,7 +3,8 @@ import pytest
 from hopscotch import Registry
 from markupsafe import Markup
 
-from themester import url, nullster
+from themester import nullster
+from themester import url
 from themester.protocols import Resource
 from themester.resources import Document
 from themester.resources import Folder

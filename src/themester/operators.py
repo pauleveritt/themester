@@ -9,9 +9,9 @@ from hopscotch import Registry
 from hopscotch.operators import make_field_operator
 
 from themester.resources import Site
+from themester.url import find_resource
 from themester.url import RelativePath
 from themester.url import StaticRelativePath
-from themester.url import find_resource
 
 
 @dataclass(frozen=True)

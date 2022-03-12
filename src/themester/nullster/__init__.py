@@ -21,6 +21,5 @@ class NullsterConfig:
 
 def hopscotch_setup(registry: Registry) -> None:
     """Setup this package."""
-
     static_src = StaticSrc(here, source=Path("static"))
     registry.register(static_src)
