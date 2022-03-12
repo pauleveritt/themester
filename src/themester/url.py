@@ -1,10 +1,11 @@
+"""Helpers for URL and path functions."""
 import inspect
 from collections.abc import Mapping
 from dataclasses import dataclass
 from dataclasses import field
 from itertools import repeat
 from pathlib import Path
-from pathlib import PurePath
+from pathlib import PurePosixPath
 from typing import cast
 from typing import Iterable
 from typing import List
@@ -15,19 +16,20 @@ from hopscotch import injectable
 from themester.protocols import Resource
 from themester.resources import Site
 
-ROOT = PurePath("/")
-ROOT_PATHS = ("/", "/index", PurePath("/"), PurePath("/index"))
+ROOT = PurePosixPath("/")
+ROOT_PATHS = ("/", "/index", PurePosixPath("/"), PurePosixPath("/index"))
 
 
-def find_resource(root: Site, path: PurePath) -> Resource:
+def find_resource(root: Site, path: PurePosixPath) -> Resource:
     """Given a path-like string, walk the tree and return object.
 
     Resources in a resource tree can be found with path-like lookups.
-    This implementation uses ``PurePath`` as the path language.
+    This implementation uses ``PurePosixPath`` as the path language.
 
     Paths must start with a leading ``/``, but a trailing slash is optional.
     Folder paths can be with or without a trailing ``index`` part.
-    If the provided path ends with ``index``, it will be removed for the purposes of walking the resource tree.
+    If the provided path ends with ``index``, it will be removed for the
+    purposes of walking the resource tree.
 
     Args:
         root: The top of the resource tree.
@@ -41,7 +43,6 @@ def find_resource(root: Site, path: PurePath) -> Resource:
         KeyError: Asking for a path part that isn't in the dict at that
             part of the tree.
     """
-
     if not path.is_absolute():
         # ResourceLike paths must start with a slash, so this is
         # probably a static resource path
@@ -61,9 +62,9 @@ def find_resource(root: Site, path: PurePath) -> Resource:
             part = next(parts)
             try:
                 result = result[part]  # type: ignore
-            except KeyError:
+            except KeyError:  # noqa: B904
                 m = f'No resource at path "{path}"'
-                raise KeyError(m)
+                raise KeyError(m)  # noqa: B904
         except StopIteration:
             break
     return cast(Resource, result)
@@ -78,7 +79,6 @@ def parents(resource: Resource) -> Iterable[Resource]:
     Returns:
         A tuple of zero (root is target) or more resources.
     """
-
     these_parents: List[Resource] = []
     parent = resource.parent
     while parent is not None:
@@ -89,18 +89,19 @@ def parents(resource: Resource) -> Iterable[Resource]:
 
 
 def relative_path(
-    current: PurePath,
-    target: PurePath,
-    static_prefix: Optional[PurePath] = None,
-) -> PurePath:
-    """
-    Calculate a dotted path from a source to destination.
+    current: PurePosixPath,
+    target: PurePosixPath,
+    static_prefix: Optional[PurePosixPath] = None,
+) -> PurePosixPath:
+    """Calculate a dotted path from a source to destination.
 
     Relative paths are hard.
     Lots of edge cases, lots of configurable policies.
-    This function is the innermost logic, which presumes lots of complexity is handled before stuff gets passed in.
+    This function is the innermost logic, which presumes lots of complexity is
+    handled before stuff gets passed in.
 
-    Themester's logic is based on Python's ``PurePath``: a virtual hierarchy that is sort of like the filesystem, but not actually tied to a filesystem.
+    Themester's logic is based on Python's ``PurePosixPath``: a virtual hierarchy that is sort of
+    like the filesystem, but not actually tied to a filesystem.
     References to documents in the site and static assets are done as these virtual pure paths.
     Static asset references are "normalized" at definition time to be relative to a configurable site root.
 
@@ -125,8 +126,13 @@ def relative_path(
         current: Source from which target is relative, with leading slash
         target: Destination, with leading slash
         static_prefix: Path to insert between dots and target
-    """
 
+    Returns:
+        The path to the target.
+
+    Raises:
+        ValueError: Trying to get an invalid path.
+    """
     if not current.is_absolute():
         m = f'Source path "{str(current)}" must start with a slash'
         raise ValueError(m)
@@ -138,13 +144,13 @@ def relative_path(
     # Do an optimization...bail out immediately if the same, but make
     # it relative
     if current == target:
-        return PurePath(current.name)
+        return PurePosixPath(current.name)
 
     # noinspection PyTypeChecker
     current_parents = iter(current.parents)
     target_parents = target.parents
 
-    result: Optional[PurePath] = None
+    result: Optional[PurePosixPath] = None
     hops = -1
 
     while True:
@@ -160,7 +166,7 @@ def relative_path(
     remainder_parts = target.relative_to(str(result))
 
     # How many hops up to go
-    prefix = PurePath("/".join(repeat("..", hops)))
+    prefix = PurePosixPath("/".join(repeat("..", hops)))
 
     # Join it all together
     if static_prefix is None:
@@ -170,7 +176,7 @@ def relative_path(
     return v
 
 
-def resource_path(resource: Resource) -> PurePath:
+def resource_path(resource: Resource) -> PurePosixPath:
     """Return a path representation of resource.
 
     The resource should be location-aware, meaning, it has a ``name`` and a ``parent`` attributes.
@@ -183,11 +189,10 @@ def resource_path(resource: Resource) -> PurePath:
         resource: The target to get the path for.
 
     Returns:
-        A PurePath with representation.
+        A PurePosixPath with representation.
     """
-
     # Bail out quickly if we are the root or in the root
-    root_path = PurePath("/")
+    root_path = PurePosixPath("/")
 
     if resource.parent is None:
         return root_path
@@ -199,28 +204,34 @@ def resource_path(resource: Resource) -> PurePath:
 
     # Get the names for each part, then join with slashes
     parts = [
-        PurePath(p.name) if p.name is not None else PurePath("/") for p in lineage if p
+        PurePosixPath(p.name) if p.name is not None else PurePosixPath("/")
+        for p in lineage
+        if p
     ]
     path = root_path.joinpath(*parts)
     return path
 
 
-def normalize(item: Resource | PurePath | str) -> PurePath:
-    """
-    Convert current or target to a PurePath.
+def normalize(item: Resource | PurePosixPath | str) -> PurePosixPath:
+    """Convert current or target to a PurePosixPath.
 
-    The relative function below liberally accepts a PurePath, ResourceLike, or str for current/target.
-    Convert to PurePath.
+    The relative function below liberally accepts a PurePosixPath, ResourceLike, or str for current/target.
+    Convert to PurePosixPath.
 
     Args:
-         item: The object to make into a "normalized" PurePath.
+         item: The object to make into a "normalized" PurePosixPath.
+
+    Returns:
+         The target path.
+
+    Raises:
+        ValueError: Sending an item that isn't a known type.
     """
-
-    # Quick convenience check, root always results in PurePath('/index')
+    # Quick convenience check, root always results in PurePosixPath('/index')
     if item in ROOT_PATHS:
-        return PurePath("/index")
+        return PurePosixPath("/index")
 
-    if isinstance(item, PurePath):
+    if isinstance(item, PurePosixPath):
         normalized_item = item
     elif hasattr(item, "parent"):
         # Crappy way to check if something is a ResourceLike
@@ -228,26 +239,28 @@ def normalize(item: Resource | PurePath | str) -> PurePath:
         if isinstance(item, Mapping):
             # Add /index
             normalized_item = normalized_item / "index"
-    else:
+    elif isinstance(item, str):
         # Presume it is a string conforming to the path rules, though it
         # might be a non-resource object (no parent)
-        assert isinstance(item, str)  # This shouldn't fail
-        normalized_item = PurePath(item)
+        normalized_item = PurePosixPath(item)
+    else:
+        msg = f"Cannot normalize {item}"
+        raise ValueError(msg)
 
     return normalized_item
 
 
 def relative(
-    current: Resource | PurePath | str,
-    target: Resource | PurePath | str,
-    static_prefix: Optional[PurePath] = None,
+    current: Resource | PurePosixPath | str,
+    target: Resource | PurePosixPath | str,
+    static_prefix: Optional[PurePosixPath] = None,
     suffix: Optional[str] = None,
-) -> PurePath:
-    """
-    Get a path but with all the framework policies on the way in/out.
+) -> PurePosixPath:
+    """Get a path but with all the framework policies on the way in/out.
 
     As mentioned in ``relative_path``, there are parts of the logic that it doesn't handle.
-    It expects everything to be "normalized": PurePaths on both sides, no concept of ``index`` for folders, no configurable ``.html`` suffix.
+    It expects everything to be "normalized": PurePosixPaths on both sides, no concept of ``index`` for folders,
+    no configurable ``.html`` suffix.
     This function does those things.
 
     Args:
@@ -255,9 +268,11 @@ def relative(
         target: The resoure, path, or string for destination.
         static_prefix: If resolving a static asset, provide this.
         suffix: If resolving a resource, provide file extension.
-    """
 
-    # Normalize to a PurePath
+    Returns:
+        The path to the target.
+    """
+    # Normalize to a PurePosixPath
     normalized_current = normalize(current)
     normalized_target = normalize(target)
 
@@ -294,20 +309,20 @@ class StaticSrc:
     - Accept an argument for a relative ``Path`` to a static asset
     - Turn that into a full/absolute/resolved path
     - Trim off the static_prefix
-    - Return a ``PurePath`` that is relative to the ``static_source`` dir
+    - Return a ``PurePosixPath`` that is relative to the ``static_source`` dir
     """
 
     here: Path
     source: Path
 
     def __post_init__(self) -> None:
+        """Setup the source based on other information."""
         parent = Path(self.here).parent
         target_path = parent.joinpath(self.source)
         self.source = target_path.resolve()
 
-    def __call__(self, target: Path) -> PurePath | None:
-        """Make the target relative to the site's static directory"""
-
+    def __call__(self, target: Path) -> PurePosixPath | Path | None:
+        """Make the target relative to the site's static directory."""
         # Get a Path() pointed at the caller's directory
         frame = inspect.stack()[1]
         module = inspect.getmodule(frame[0])
@@ -328,38 +343,36 @@ class StaticSrc:
 @injectable()
 @dataclass
 class StaticDest:
-    """
-    Configure the relative path to the static output dir.
+    """Configure the relative path to the static output dir.
 
     Our rendering needs to generate links to the static dir. This
     might be different for different systems. For example, Sphinx
     uses `_static` (and in fact, makes it configurable.)
     """
 
-    dest: PurePath = PurePath("static")
+    dest: PurePosixPath = PurePosixPath("static")
 
 
 @injectable()
 @dataclass
 class RelativePath:
-    """
-    Convert path to resource to a relative path.
-    """
+    """Convert path to resource to a relative path."""
 
     resource: Resource
     suffix: str = ".html"  # TODO Get this from config
 
     def __call__(
         self,
-        target: Resource | PurePath | str,
-    ) -> PurePath:
-        """
-        Convert a resource path to a relative path with a suffix.
+        target: Resource | PurePosixPath | str,
+    ) -> PurePosixPath:
+        """Convert a resource path to a relative path with a suffix.
 
         Args:
              target: Full path to resource starting from root.
-        """
 
+        Returns:
+             The target path.
+        """
         value = relative(
             current=self.resource,
             target=target,
@@ -372,9 +385,7 @@ class RelativePath:
 @injectable()
 @dataclass
 class StaticRelativePath:
-    """
-    Convert path to static asset to a relative path.
-    """
+    """Convert path to static asset to a relative path."""
 
     resource: Resource
     static_src: StaticSrc
@@ -382,8 +393,8 @@ class StaticRelativePath:
 
     def __call__(
         self,
-        target: Resource | PurePath | str,
-    ) -> PurePath:
+        target: Resource | PurePosixPath | str,
+    ) -> PurePosixPath:
         """Convert an asset path to a relative path.
 
         The configs etc. will point at a static asset in the theme file.
@@ -392,13 +403,15 @@ class StaticRelativePath:
         The target path is "normalized" to be relative to the static *source*.
         Meaning, if the theme has ``some_static/images/favicon.ico``, it is
         expected that the value passed here is
-        ``PurePath('images/favicon.ico')``. This is usually done through the
+        ``PurePosixPath('images/favicon.ico')``. This is usually done through the
         use of the ``StaticHere`` constructor as assignment time.
 
         Args:
              target: Path relative to ``StaticConfig.source``.
-        """
 
+        Returns:
+             The target path.
+        """
         value = relative(
             current=self.resource,
             target=target,
