@@ -1,11 +1,10 @@
 """Test the url and path helper functions."""
 from pathlib import Path
-from pathlib import PurePath
+from pathlib import PurePosixPath
 from typing import cast
 
 import pytest
 
-from themester.nullster import static_src
 from themester.protocols import Resource
 from themester.resources import Site
 from themester.url import find_resource
@@ -22,24 +21,24 @@ from themester.url import StaticSrc
 @pytest.mark.parametrize(
     "path, expected",
     [
-        (PurePath("/"), None),
-        (PurePath("/index"), None),
-        (PurePath("/f1"), "f1"),
-        (PurePath("/f1/"), "f1"),
-        (PurePath("/f1/index"), "f1"),
-        (PurePath("/d1"), "d1"),
-        (PurePath("/d1/"), "d1"),
-        (PurePath("/f1/d2"), "d2"),
-        (PurePath("/f1/d2/"), "d2"),
-        (PurePath("/f1/f3/"), "f3"),
-        (PurePath("/f1/f3"), "f3"),
-        (PurePath("/f1/f3/index"), "f3"),
-        (PurePath("/f1/f3/"), "f3"),
-        (PurePath("/f1/f3/d3"), "d3"),
-        (PurePath("/f1/f3/d3/"), "d3"),
+        (PurePosixPath("/"), None),
+        (PurePosixPath("/index"), None),
+        (PurePosixPath("/f1"), "f1"),
+        (PurePosixPath("/f1/"), "f1"),
+        (PurePosixPath("/f1/index"), "f1"),
+        (PurePosixPath("/d1"), "d1"),
+        (PurePosixPath("/d1/"), "d1"),
+        (PurePosixPath("/f1/d2"), "d2"),
+        (PurePosixPath("/f1/d2/"), "d2"),
+        (PurePosixPath("/f1/f3/"), "f3"),
+        (PurePosixPath("/f1/f3"), "f3"),
+        (PurePosixPath("/f1/f3/index"), "f3"),
+        (PurePosixPath("/f1/f3/"), "f3"),
+        (PurePosixPath("/f1/f3/d3"), "d3"),
+        (PurePosixPath("/f1/f3/d3/"), "d3"),
     ],
 )
-def test_find_resource(path: PurePath, expected: str, site: Site) -> None:
+def test_find_resource(path: PurePosixPath, expected: str, site: Site) -> None:
     """Use the site fixture to see if find_resource logic works."""
     resource = find_resource(site, path)
     assert resource.name == expected
@@ -47,7 +46,7 @@ def test_find_resource(path: PurePath, expected: str, site: Site) -> None:
 
 def test_find_resource_missing_slash(site: Site) -> None:
     """Missing slash at path beginning should give ValueError."""
-    path = PurePath("f1/XXX")
+    path = PurePosixPath("f1/XXX")
     with pytest.raises(ValueError) as exc:
         find_resource(site, path)
     expected = 'ResourceLike path "f1/XXX" must start with a slash'
@@ -57,11 +56,11 @@ def test_find_resource_missing_slash(site: Site) -> None:
 @pytest.mark.parametrize(
     "path, expected",
     [
-        (PurePath("/XXX"), 'No resource at path "/XXX"'),
-        (PurePath("/f1/XXX"), 'No resource at path "/f1/XXX"'),
+        (PurePosixPath("/XXX"), 'No resource at path "/XXX"'),
+        (PurePosixPath("/f1/XXX"), 'No resource at path "/f1/XXX"'),
     ],
 )
-def test_find_resource_failed(path: PurePath, expected: str, site: Site) -> None:
+def test_find_resource_failed(path: PurePosixPath, expected: str, site: Site) -> None:
     """Provide a bogus path and get a LookupError."""
     with pytest.raises(KeyError) as exc:
         find_resource(site, path)
@@ -71,36 +70,36 @@ def test_find_resource_failed(path: PurePath, expected: str, site: Site) -> None
 @pytest.mark.parametrize(
     "this_path, expected",
     (
-        (PurePath("/"), ()),
-        (PurePath("/f1/"), ((None, PurePath("/")),)),
-        (PurePath("/d1"), ((None, PurePath("/")),)),
+        (PurePosixPath("/"), ()),
+        (PurePosixPath("/f1/"), ((None, PurePosixPath("/")),)),
+        (PurePosixPath("/d1"), ((None, PurePosixPath("/")),)),
         (
-            PurePath("/f1/d2"),
+            PurePosixPath("/f1/d2"),
             (
-                (None, PurePath("/")),
-                ("f1", PurePath("/f1/")),
+                (None, PurePosixPath("/")),
+                ("f1", PurePosixPath("/f1/")),
             ),
         ),
         (
-            PurePath("/f1/f3/"),
+            PurePosixPath("/f1/f3/"),
             (
-                (None, PurePath("/")),
-                ("f1", PurePath("/f1/")),
+                (None, PurePosixPath("/")),
+                ("f1", PurePosixPath("/f1/")),
             ),
         ),
         (
-            PurePath("/f1/f3/d3"),
+            PurePosixPath("/f1/f3/d3"),
             (
-                (None, PurePath("/")),
-                ("f1", PurePath("/f1/")),
-                ("f3", PurePath("/f1/f3/")),
+                (None, PurePosixPath("/")),
+                ("f1", PurePosixPath("/f1/")),
+                ("f3", PurePosixPath("/f1/f3/")),
             ),
         ),
     ),
 )
 def test_parents(
-    this_path: PurePath,
-    expected: tuple[tuple[str, PurePath]],
+    this_path: PurePosixPath,
+    expected: tuple[tuple[str, PurePosixPath]],
     site: Site,
 ) -> None:
     """Ensure the lineage is setup correctly."""
@@ -113,20 +112,22 @@ def test_parents(
 @pytest.mark.parametrize(
     "target, expected",
     (
-        (PurePath("/"), PurePath("/")),
-        (PurePath("/f1"), PurePath("/f1/")),
-        (PurePath("/f1/"), PurePath("/f1/")),
-        (PurePath("/d1"), PurePath("/d1/")),
-        (PurePath("/d1/"), PurePath("/d1/")),
-        (PurePath("/f1/d2"), PurePath("/f1/d2/")),
-        (PurePath("/f1/d2/"), PurePath("/f1/d2/")),
-        (PurePath("/f1/f3"), PurePath("/f1/f3/")),
-        (PurePath("/f1/f3/"), PurePath("/f1/f3/")),
-        (PurePath("/f1/f3/d3"), PurePath("/f1/f3/d3/")),
-        (PurePath("/f1/f3/d3/"), PurePath("/f1/f3/d3/")),
+        (PurePosixPath("/"), PurePosixPath("/")),
+        (PurePosixPath("/f1"), PurePosixPath("/f1/")),
+        (PurePosixPath("/f1/"), PurePosixPath("/f1/")),
+        (PurePosixPath("/d1"), PurePosixPath("/d1/")),
+        (PurePosixPath("/d1/"), PurePosixPath("/d1/")),
+        (PurePosixPath("/f1/d2"), PurePosixPath("/f1/d2/")),
+        (PurePosixPath("/f1/d2/"), PurePosixPath("/f1/d2/")),
+        (PurePosixPath("/f1/f3"), PurePosixPath("/f1/f3/")),
+        (PurePosixPath("/f1/f3/"), PurePosixPath("/f1/f3/")),
+        (PurePosixPath("/f1/f3/d3"), PurePosixPath("/f1/f3/d3/")),
+        (PurePosixPath("/f1/f3/d3/"), PurePosixPath("/f1/f3/d3/")),
     ),
 )
-def test_resource_path(target: PurePath, expected: PurePath, site: Site) -> None:
+def test_resource_path(
+    target: PurePosixPath, expected: PurePosixPath, site: Site
+) -> None:
     """Check nested resource paths."""
     r = find_resource(site, target)
     path = resource_path(r)
@@ -136,26 +137,54 @@ def test_resource_path(target: PurePath, expected: PurePath, site: Site) -> None
 @pytest.mark.parametrize(
     "current, target, expected",
     [
-        (PurePath("/index"), PurePath("/index"), PurePath("index")),
-        (PurePath("/d1"), PurePath("/d1"), PurePath("d1")),
-        (PurePath("/d1/"), PurePath("/d1"), PurePath("d1")),
-        (PurePath("/f1/f3/index"), PurePath("/f1/d2"), PurePath("../d2")),
-        (PurePath("/f1/f3/d3"), PurePath("/d1"), PurePath("../../d1")),
-        (PurePath("/f1/f3/d3"), PurePath("/index"), PurePath("../../index")),
-        (PurePath("/f1/f3/d3"), PurePath("/f1/index"), PurePath("../index")),
-        (PurePath("/f1/f3/d3"), PurePath("/f1/f3/index"), PurePath("index")),
-        (PurePath("/d1"), PurePath("/f1/f3/d3/"), PurePath("f1/f3/d3")),
-        (PurePath("/f1/f3/index"), PurePath("/index"), PurePath("../../index")),
-        (PurePath("/f1/f3/index"), PurePath("/f1/index"), PurePath("../index")),
-        (PurePath("/f1/f3/index"), PurePath("/f1/f3/d3"), PurePath("d3")),
-        (PurePath("/index"), PurePath("/d1"), PurePath("d1")),
-        (PurePath("/d1"), PurePath("/index"), PurePath("index")),
+        (PurePosixPath("/index"), PurePosixPath("/index"), PurePosixPath("index")),
+        (PurePosixPath("/d1"), PurePosixPath("/d1"), PurePosixPath("d1")),
+        (PurePosixPath("/d1/"), PurePosixPath("/d1"), PurePosixPath("d1")),
+        (
+            PurePosixPath("/f1/f3/index"),
+            PurePosixPath("/f1/d2"),
+            PurePosixPath("../d2"),
+        ),
+        (PurePosixPath("/f1/f3/d3"), PurePosixPath("/d1"), PurePosixPath("../../d1")),
+        (
+            PurePosixPath("/f1/f3/d3"),
+            PurePosixPath("/index"),
+            PurePosixPath("../../index"),
+        ),
+        (
+            PurePosixPath("/f1/f3/d3"),
+            PurePosixPath("/f1/index"),
+            PurePosixPath("../index"),
+        ),
+        (
+            PurePosixPath("/f1/f3/d3"),
+            PurePosixPath("/f1/f3/index"),
+            PurePosixPath("index"),
+        ),
+        (PurePosixPath("/d1"), PurePosixPath("/f1/f3/d3/"), PurePosixPath("f1/f3/d3")),
+        (
+            PurePosixPath("/f1/f3/index"),
+            PurePosixPath("/index"),
+            PurePosixPath("../../index"),
+        ),
+        (
+            PurePosixPath("/f1/f3/index"),
+            PurePosixPath("/f1/index"),
+            PurePosixPath("../index"),
+        ),
+        (
+            PurePosixPath("/f1/f3/index"),
+            PurePosixPath("/f1/f3/d3"),
+            PurePosixPath("d3"),
+        ),
+        (PurePosixPath("/index"), PurePosixPath("/d1"), PurePosixPath("d1")),
+        (PurePosixPath("/d1"), PurePosixPath("/index"), PurePosixPath("index")),
     ],
 )
 def test_relative_path(
-    current: PurePath,
-    target: PurePath,
-    expected: PurePath,
+    current: PurePosixPath,
+    target: PurePosixPath,
+    expected: PurePosixPath,
 ) -> None:
     """Check relative paths between a source and a target."""
     result = relative_path(current, target)
@@ -165,18 +194,18 @@ def test_relative_path(
 @pytest.mark.parametrize(
     "current, expected",
     [
-        (PurePath("/index"), PurePath("static/css/styles.css")),
-        (PurePath("/d1"), PurePath("static/css/styles.css")),
-        (PurePath("/f1/index"), PurePath("../static/css/styles.css")),
-        (PurePath("/f1/f3/index"), PurePath("../../static/css/styles.css")),
-        (PurePath("/f1/f3/d3"), PurePath("../../static/css/styles.css")),
+        (PurePosixPath("/index"), PurePosixPath("static/css/styles.css")),
+        (PurePosixPath("/d1"), PurePosixPath("static/css/styles.css")),
+        (PurePosixPath("/f1/index"), PurePosixPath("../static/css/styles.css")),
+        (PurePosixPath("/f1/f3/index"), PurePosixPath("../../static/css/styles.css")),
+        (PurePosixPath("/f1/f3/d3"), PurePosixPath("../../static/css/styles.css")),
     ],
 )
-def test_relative_path_static(current: PurePath, expected: PurePath) -> None:
+def test_relative_path_static(current: PurePosixPath, expected: PurePosixPath) -> None:
     """Relative paths between two resources, but involving the static path."""
-    root_path = PurePath("/")
-    target = PurePath("css/styles.css")
-    static_prefix = PurePath("static")
+    root_path = PurePosixPath("/")
+    target = PurePosixPath("css/styles.css")
+    static_prefix = PurePosixPath("static")
 
     rp = relative_path(current, root_path, static_prefix=static_prefix)
     result = rp / target
@@ -186,14 +215,16 @@ def test_relative_path_static(current: PurePath, expected: PurePath) -> None:
 @pytest.mark.parametrize(
     "current, expected",
     (
-        (PurePath("/"), PurePath("/index")),
-        (PurePath("/index"), PurePath("/index")),
-        ("site", PurePath("/index")),
-        ("site", PurePath("/index")),
-        ("/f1/d2", PurePath("/f1/d2")),
+        (PurePosixPath("/"), PurePosixPath("/index")),
+        (PurePosixPath("/index"), PurePosixPath("/index")),
+        ("site", PurePosixPath("/index")),
+        ("site", PurePosixPath("/index")),
+        ("/f1/d2", PurePosixPath("/f1/d2")),
     ),
 )
-def test_normalize(current: PurePath | str, expected: PurePath, site: Site) -> None:
+def test_normalize(
+    current: PurePosixPath | str, expected: PurePosixPath, site: Site
+) -> None:
     """Test passing resources, paths, and strings."""
     if current == "site":
         path = normalize(cast(Resource, site))
@@ -208,27 +239,57 @@ def test_normalize(current: PurePath | str, expected: PurePath, site: Site) -> N
 @pytest.mark.parametrize(
     "current, target, static_prefix, suffix, expected",
     (
-        (PurePath("/"), PurePath("/"), None, None, PurePath("index")),
-        (PurePath("/"), PurePath("/"), None, ".html", PurePath("index.html")),
-        (PurePath("/index"), PurePath("/"), None, None, PurePath("index")),
-        (PurePath("/"), PurePath("/index"), None, None, PurePath("index")),
-        (PurePath("/f1/d2"), PurePath("/d1"), None, None, PurePath("d1")),
-        (PurePath("/f1/d2"), PurePath("/d1"), None, ".html", PurePath("d1.html")),
+        (PurePosixPath("/"), PurePosixPath("/"), None, None, PurePosixPath("index")),
         (
-            PurePath("/f1/d2"),
-            PurePath("icon.png"),
-            PurePath("/xxx"),
+            PurePosixPath("/"),
+            PurePosixPath("/"),
             None,
-            PurePath("/xxx/icon.png"),
+            ".html",
+            PurePosixPath("index.html"),
+        ),
+        (
+            PurePosixPath("/index"),
+            PurePosixPath("/"),
+            None,
+            None,
+            PurePosixPath("index"),
+        ),
+        (
+            PurePosixPath("/"),
+            PurePosixPath("/index"),
+            None,
+            None,
+            PurePosixPath("index"),
+        ),
+        (
+            PurePosixPath("/f1/d2"),
+            PurePosixPath("/d1"),
+            None,
+            None,
+            PurePosixPath("d1"),
+        ),
+        (
+            PurePosixPath("/f1/d2"),
+            PurePosixPath("/d1"),
+            None,
+            ".html",
+            PurePosixPath("d1.html"),
+        ),
+        (
+            PurePosixPath("/f1/d2"),
+            PurePosixPath("icon.png"),
+            PurePosixPath("/xxx"),
+            None,
+            PurePosixPath("/xxx/icon.png"),
         ),
     ),
 )
 def test_relative(
-    current: PurePath,
-    target: PurePath,
-    static_prefix: PurePath | None,
+    current: PurePosixPath,
+    target: PurePosixPath,
+    static_prefix: PurePosixPath | None,
     suffix: str | None,
-    expected: PurePath,
+    expected: PurePosixPath,
     site: Site,
 ) -> None:
     """More of the integrated test."""
@@ -242,9 +303,9 @@ def test_factory_relative_path(site: Site) -> None:
     f1 = cast(dict[str, Resource], site["f1"])
     resource = f1["d2"]
     srp = RelativePath(resource=resource)
-    target = PurePath("/foo/bar/baz")
+    target = PurePosixPath("/foo/bar/baz")
     result = srp(target)
-    assert PurePath("../foo/bar/baz.html") == result
+    assert PurePosixPath("../foo/bar/baz.html") == result
 
 
 @pytest.fixture
@@ -266,9 +327,9 @@ def test_factory_static_relative_path(site: Site, nullster_path: Path) -> None:
         resource=cast(Resource, resource),
         static_src=this_static_src,
     )
-    target = PurePath("images/favicon.ico")
+    target = PurePosixPath("images/favicon.ico")
     result = srp(target)
-    assert PurePath("static/images/favicon.ico") == result
+    assert PurePosixPath("static/images/favicon.ico") == result
 
 
 def test_here_one_level() -> None:
@@ -303,10 +364,3 @@ def test_here_three_levels() -> None:
     target = Path("../../tests/test_url.py")
     result = here(target)
     assert Path("tests/test_url.py") == result
-
-
-def test_here_nullster(nullster_path: Path) -> None:
-    """The nullster theme should provide a static asset."""
-    target = nullster_path.parent / "static/nullster.css"
-    result = static_src(target)
-    assert Path("nullster.css") == result

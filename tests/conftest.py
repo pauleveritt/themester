@@ -1,11 +1,9 @@
 """Test fixtures."""
-from typing import cast
-
 import pytest
 from hopscotch import Registry
 from markupsafe import Markup
 
-from themester import url
+from themester import url, nullster
 from themester.protocols import Resource
 from themester.resources import Document
 from themester.resources import Folder
@@ -32,11 +30,20 @@ def site() -> Site:
 
 
 @pytest.fixture(scope="session")
-def registry(site: Site) -> Registry:
+def site_registry(site: Site) -> Registry:
     """A fixture for a configured registry."""
     r = Registry()
     r.register(site)
     r.scan(url)
-    f1 = cast(dict[str, Resource], site["f1"])
-    r.register(f1["d2"], kind=Resource)
+    current_resource = site["d1"]
+    r.register(current_resource, kind=Resource)
+    return r
+
+
+@pytest.fixture(scope="session")
+def nullster_registry(site_registry: Registry) -> Registry:
+    """A registry configured for the Nullster theme."""
+    r = Registry(parent=site_registry)
+    r.setup(nullster)
+    r.scan(nullster)
     return r
