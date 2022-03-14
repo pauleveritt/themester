@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from hopscotch import Registry
+from sphinx.application import Sphinx
 
 from themester.decorators import config
 from themester.url import StaticSrc
@@ -23,3 +24,8 @@ def hopscotch_setup(registry: Registry) -> None:
     """Setup this package."""
     static_src = StaticSrc(here, source=Path("static"))
     registry.register(static_src)
+
+
+def setup(app: Sphinx) -> None:
+    """Sphinx extension setup."""
+    pass

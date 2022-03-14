@@ -4,6 +4,7 @@ from sphinx.jinja2glue import BuiltinTemplateLoader
 from viewdom import render
 
 from themester.protocols import Resource, View
+from themester.sphinx.xxx_models import PageContext
 
 
 class ThemesterBridge(BuiltinTemplateLoader):
@@ -14,9 +15,9 @@ class ThemesterBridge(BuiltinTemplateLoader):
 
         This is essentially a view layer.
         """
-        parent_registry: Registry = context['registry']
+        parent_registry: Registry = context["registry"]
         registry = Registry(parent=parent_registry)
-        page_context = context['page_context']
+        page_context = registry.get(PageContext)
 
         # Get the context and view
         registry.register(page_context)

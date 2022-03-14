@@ -1,9 +1,11 @@
 """The event handler for Sphinx's ``html-page-context` event."""
 from typing import Any
 
+from hopscotch import Registry
 from markupsafe import Markup
+from sphinx.application import Sphinx
 
-from themester.sphinx.models import PageContext, Link, Rellink
+from themester.sphinx.xxx_models import PageContext, Rellink
 
 
 def make_page_context(
@@ -49,38 +51,24 @@ def make_page_context(
     return page_context
 
 
-def setup(app, pagename, templatename, context, doctree):
-    """ Store a resource-bound container in Sphinx context """
+def setup(
+    app: Sphinx,
+    pagename: str,
+    templatename: str,
+    context,
+    doctree,
+) -> None:
+    """Store a resource-bound container in Sphinx context."""
+    # Make a per-request registry
+    parent_registry: Registry = getattr(app, "hopscotch_registry")
+    registry = Registry(parent=parent_registry)
+    context["registry"] = registry
 
-    # Make a container and put some Sphinx stuff in it
-    registry: InjectorRegistry = getattr(app, 'injector_registry')
-    context['injector_registry'] = registry
-
-    # Make a temporary container to get the resource
-    temp_container = registry.create_injectable_container()
-    temp_container.register_singleton(context, PageContext)
-    resource = temp_container.get(Resource)
-
-    # Now make a container with the resource as the context
-    container = registry.create_injectable_container(context=resource)
-    context['injector_container'] = container
-
-    # Put some things in that container
-
-    # Might was well put the Sphinx build environment in
-    env: BuildEnvironment = app.env
-    container.register_singleton(env, BuildEnvironment)
-
-    # Let's put the resource in as a singleton, no need to do the
-    # lookup again.
-    container.register_singleton(resource, Resource)
-
-    # Construct a PageContext from the data Sphinx packed into the
-    # html-page-context. Doing so lets us have stronger typing than
-    # just dumping it in as-is.
-    context['page_context'] = make_page_context(
+    # Make a PageContext and put it in this registry
+    page_context = make_page_context(
         context=context,
         pagename=pagename,
-        toc_num_entries=env.toc_num_entries,
-        document_metadata=env.metadata[pagename],
+        toc_num_entries=app.env.toc_num_entries,
+        document_metadata=app.env.metadata[pagename],
     )
+    registry.register(page_context)

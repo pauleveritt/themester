@@ -1,7 +1,13 @@
 """Test fixtures."""
+import os
+from pathlib import Path
+from shutil import rmtree
+
 import pytest
+from bs4 import BeautifulSoup
 from hopscotch import Registry
 from markupsafe import Markup
+from sphinx.testing.path import path
 
 from themester import nullster
 from themester import url
@@ -9,6 +15,10 @@ from themester.protocols import Resource
 from themester.resources import Document
 from themester.resources import Folder
 from themester.resources import Site
+
+pytest_plugins = [
+    "sphinx.testing.fixtures",
+]
 
 
 @pytest.fixture(scope="session")
@@ -48,3 +58,38 @@ def nullster_registry(site_registry: Registry) -> Registry:
     r.setup(nullster)
     r.scan(nullster)
     return r
+
+
+@pytest.fixture(scope="session")
+def remove_sphinx_projects(sphinx_test_tempdir):
+    # Even upon exception, remove any directory from temp area
+    # which looks like a Sphinx project. This ONLY runs once.
+    roots_path = Path(sphinx_test_tempdir)
+    for d in roots_path.iterdir():
+        if d.is_dir():
+            build_dir = Path(d, "_build")
+            if build_dir.exists():
+                # This directory is a Sphinx project, remove it
+                rmtree(str(d))
+
+    yield
+
+
+@pytest.fixture()
+def rootdir(remove_sphinx_projects):
+    roots = path(os.path.dirname(__file__) or ".").abspath() / "sphinx" / "roots"
+    yield roots
+
+
+@pytest.fixture()
+def content(app):
+    app.build()
+    yield app
+
+
+@pytest.fixture()
+def page(content, request) -> BeautifulSoup:
+    pagename = request.param
+    c = (content.outdir / pagename).text()
+
+    yield BeautifulSoup(c, "html.parser")

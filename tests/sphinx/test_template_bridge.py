@@ -1,14 +1,16 @@
+"""Test the template bridge."""
 import pytest
 from bs4 import BeautifulSoup
 from hopscotch import Registry
 
-from themester.sphinx.html_page_context import make_page_context
-from themester.sphinx.models import PageContext
-from themester.sphinx.template_bridge import ThemesterBridge
+from themester.sphinx.xxx_html_page_context import make_page_context
+from themester.sphinx.xxx_models import PageContext
+from themester.sphinx.xxx_template_bridge import ThemesterBridge
 
 
 @pytest.fixture
 def page_context() -> PageContext:
+    """Provide a mocked page context."""
     context = dict(
         parents=tuple(),
         rellinks=tuple(),
@@ -35,5 +37,5 @@ def test_template_bridge_instance(nullster_registry: Registry) -> None:
         page_context=page_context,
     )
     rendered = tb.render("", context)
-    result = BeautifulSoup(rendered, 'html.parser')
-    assert 'Resource: Some Page' == result.select_one('title').text
+    result = BeautifulSoup(rendered, "html.parser")
+    assert "D1 - View" == result.select_one("title").text
