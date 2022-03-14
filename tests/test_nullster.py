@@ -3,6 +3,7 @@ from typing import cast
 
 import pytest
 from hopscotch import Registry
+from viewdom import render
 
 from themester.nullster import NullsterConfig
 from themester.nullster.views import IndexView
@@ -27,3 +28,5 @@ def test_index_view(nullster_registry: Registry) -> None:
     view = cast(IndexView, nullster_registry.get(View))
     assert view.page_title == "View"
     assert view.resource_title == "D1"
+    result = render(view(), registry=nullster_registry)
+    assert "<title>D1 - View</title>" == result
