@@ -1,26 +1,19 @@
 """Services for the builder init Sphinx event."""
-from pathlib import PurePosixPath
+import sys
+from importlib import import_module
+from importlib.util import spec_from_file_location, module_from_spec
+from pathlib import PurePosixPath, Path
 
 from hopscotch import Registry
 from sphinx.application import Sphinx
 from sphinx.config import Config
 
 import themester
-from themester import nullster
-from themester import sphinx
 from themester.url import StaticDest
 
 
 def setup_registry(sphinx_config: Config) -> Registry:
     """Make a registry that is Themester-aware."""
-    # Make a registry, wire up themester, sphinx, then plugins
-    # using conf.py ``themester_plugins``
-    registry = Registry()
-    registry.scan(themester)
-    registry.scan(sphinx)
-    registry.setup(nullster)
-
-    # themester.sphinx.wired_setup(registry)
     # sphinx_extensions: Tuple[str] = sphinx_config.extensions
     # for sphinx_extension in sphinx_extensions:
     #     # If the extension has ``wired_setup``, then call it
@@ -38,7 +31,32 @@ def setup_registry(sphinx_config: Config) -> Registry:
     #     # We are customizing the root
     #     registry.register_singleton(themester_root, Root)
 
-    return registry
+    return
+
+
+def run_hopscotch_setup(
+    registry: Registry,
+    sphinx_config: Config,
+):
+    """Look for ``wired_setup`` in conf.py."""
+    # Start by adding the path to conf.py to the python path.
+
+    raw_config = getattr(sphinx_config, '_raw_config', False)
+    if not raw_config:
+        # We are probably using the mock, so skip any processing
+        return
+    # noinspection PyUnresolvedReferences
+    conf_filename = Path(raw_config['__file__'])
+    conf_parent = conf_filename.parent
+    sys.path.insert(0, str(conf_parent))
+    try:
+        conf = import_module('conf')
+        wired_setup = getattr(conf, 'hopscotch_setup', None)
+        if wired_setup is not None:
+            wired_setup(registry)
+    except ImportError:
+        # conf.py doesn't have a wired_setup
+        pass
 
 
 def setup(app: Sphinx) -> None:
@@ -53,6 +71,9 @@ def setup(app: Sphinx) -> None:
 
     # Load the themester core stuff
     site_registry.setup(themester)
+
+    # Look for wired_setup in conf.py
+    run_hopscotch_setup(site_registry, app.config)
 
     # Sphinx wants _static instead of static
     static_dest = StaticDest(dest=PurePosixPath('_static'))

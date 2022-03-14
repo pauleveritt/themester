@@ -3,9 +3,9 @@ import pytest
 from bs4 import BeautifulSoup
 from hopscotch import Registry
 
-from themester.sphinx.xxx_html_page_context import make_page_context
+from themester.sphinx.html_page_context import make_page_context
 from themester.sphinx.xxx_models import PageContext
-from themester.sphinx.xxx_template_bridge import ThemesterBridge
+from themester.sphinx.template_bridge import ThemesterBridge
 
 
 @pytest.fixture

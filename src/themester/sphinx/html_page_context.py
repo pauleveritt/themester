@@ -60,9 +60,9 @@ def setup(
 ) -> None:
     """Store a resource-bound container in Sphinx context."""
     # Make a per-request registry
-    parent_registry: Registry = getattr(app, "hopscotch_registry")
-    registry = Registry(parent=parent_registry)
-    context["registry"] = registry
+    site_registry: Registry = getattr(app, "site_registry")
+    context_registry = Registry(parent=site_registry)
+    context["context_registry"] = context_registry
 
     # Make a PageContext and put it in this registry
     page_context = make_page_context(
@@ -71,4 +71,4 @@ def setup(
         toc_num_entries=app.env.toc_num_entries,
         document_metadata=app.env.metadata[pagename],
     )
-    registry.register(page_context)
+    context_registry.register(page_context)

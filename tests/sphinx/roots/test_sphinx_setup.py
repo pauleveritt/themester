@@ -1,6 +1,7 @@
-"""Integration test for Sphinx themester with nullster theme."""
+"""Integration test for Sphinx themester with no theme."""
 
 import pytest
+from bs4 import BeautifulSoup
 
 pytestmark = pytest.mark.sphinx("html", testroot="sphinx-setup")
 
@@ -12,7 +13,6 @@ pytestmark = pytest.mark.sphinx("html", testroot="sphinx-setup")
     ],
     indirect=True,
 )
-class TestNullsterIndex:
-    def test_index(self, page) -> None:
-        """Ensure basics are in the page."""
-        assert "Hello World — Python  documentation" == page.select_one("title").text
+def test_index(page: BeautifulSoup) -> None:
+    """Ensure basics are in the page."""
+    assert "Hello World — Python  documentation" == page.select_one("title").text

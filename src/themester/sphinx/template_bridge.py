@@ -3,8 +3,7 @@ from hopscotch import Registry
 from sphinx.jinja2glue import BuiltinTemplateLoader
 from viewdom import render
 
-from themester.protocols import Resource, View
-from themester.sphinx.xxx_models import PageContext
+from themester.protocols import View
 
 
 class ThemesterBridge(BuiltinTemplateLoader):
@@ -15,15 +14,9 @@ class ThemesterBridge(BuiltinTemplateLoader):
 
         This is essentially a view layer.
         """
-        parent_registry: Registry = context["registry"]
-        registry = Registry(parent=parent_registry)
-        page_context = registry.get(PageContext)
-
-        # Get the context and view
-        registry.register(page_context)
-        context = registry.get(Resource)
+        context_registry: Registry = context["context_registry"]
 
         # Now render
-        view = registry.get(View, context=context)
-        result = render(view(), registry=registry)
+        view = context_registry.get(View)
+        result = render(view(), registry=context_registry)
         return result
