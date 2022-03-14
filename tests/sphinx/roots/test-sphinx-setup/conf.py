@@ -1,5 +1,5 @@
 extensions = [
-    # "themester.sphinx",
+    "themester.sphinx",
     "myst_parser",
     # "themester.nullster",
 ]

@@ -41,17 +41,19 @@ def setup_registry(sphinx_config: Config) -> Registry:
     return registry
 
 
-def setup(app: Sphinx):
-    """ Handle the Sphinx ``builder_init`` event """
+def setup(app: Sphinx) -> None:
+    """Handle the Sphinx ``builder_init`` event."""
+    site_registry = Registry()
+    setattr(app, "site_registry", site_registry)
 
-    # Make a registry and store it on the app
-    registry = setup_registry(sphinx_config=app.config)
-    setattr(app, "hopscotch_registry", registry)
+    # Add the external data in Sphinx
+    site_registry.register(app)
+    site_registry.register(app.config)
+    site_registry.register(app.env)
 
-    # Register Sphinx app and Sphinx config instance as singletons
-    registry.register(app)
-    registry.register(app.config)
+    # Load the themester core stuff
+    site_registry.setup(themester)
 
     # Sphinx wants _static instead of static
     static_dest = StaticDest(dest=PurePosixPath('_static'))
-    registry.register(static_dest)
+    site_registry.register(static_dest)
