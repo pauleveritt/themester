@@ -5,7 +5,10 @@ from hopscotch import Registry
 from markupsafe import Markup
 from sphinx.application import Sphinx
 
+from themester.protocols import Resource
+from themester.resources import Site
 from themester.sphinx.models import PageContext, Rellink
+from themester.sphinx.resource import resource_factory
 
 
 def make_page_context(
@@ -72,3 +75,8 @@ def setup(
         document_metadata=app.env.metadata[pagename],
     )
     context_registry.register(page_context)
+
+    # Make a resource and put it in the registry
+    site = site_registry.get(Site)
+    resource = resource_factory(site, page_context)
+    context_registry.register(resource, kind=Resource)

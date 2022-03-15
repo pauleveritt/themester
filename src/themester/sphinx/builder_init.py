@@ -50,7 +50,7 @@ def setup(app: Sphinx) -> None:
     site_registry.register(app.config)
     site_registry.register(app.env)
 
-    # Load the themester core stuff
+    # Load the themester/Sphinx core stuff
     site_registry.setup(themester)
 
     # Look for hopsotch_setup in extensions

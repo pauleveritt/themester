@@ -1,16 +1,23 @@
 """Resource factory for Sphinx content."""
-from hopscotch import injectable
 
 from themester.protocols import Resource
 from themester.resources import Site, Document
 from themester.sphinx.models import PageContext
 
 
-@injectable(Resource)
 def resource_factory(
     root: Site,
     page_context: PageContext,
 ) -> Resource | None:
+    """Use info from Sphinx to get a resource for the current page."""
+    # Is this the genindex?
+    # TODO Put this back in place
+    if page_context.pagename in ["genindex", "search"]:
+        return Document(
+            name=page_context.pagename,
+            parent=root,
+            title=page_context.pagename
+        )
     # Extract what's needed and make a resource
     document_metadata: dict[str, object] | None = getattr(page_context, 'meta', None)
     if document_metadata is None:

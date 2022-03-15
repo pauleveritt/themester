@@ -2,8 +2,8 @@
 from dataclasses import dataclass
 
 from hopscotch.operators import get
-from viewdom import html
 from viewdom import VDOM
+from viewdom import html
 
 from themester.decorators import view
 from themester.protocols import Resource
