@@ -7,7 +7,7 @@ from sphinx.application import Sphinx
 
 from themester.decorators import config
 from themester.url import StaticSrc
-
+from . import views
 here = Path(__file__)
 
 
@@ -24,6 +24,7 @@ def hopscotch_setup(registry: Registry) -> None:
     """Setup this package."""
     static_src = StaticSrc(here, source=Path("static"))
     registry.register(static_src)
+    registry.scan(views)
 
 
 def setup(app: Sphinx) -> None:

@@ -1,7 +1,6 @@
 """Services for the builder init Sphinx event."""
 import sys
 from importlib import import_module
-from importlib.util import spec_from_file_location, module_from_spec
 from pathlib import PurePosixPath, Path
 
 from hopscotch import Registry
@@ -9,38 +8,15 @@ from sphinx.application import Sphinx
 from sphinx.config import Config
 
 import themester
+from themester.resources import Site
 from themester.url import StaticDest
-
-
-def setup_registry(sphinx_config: Config) -> Registry:
-    """Make a registry that is Themester-aware."""
-    # sphinx_extensions: Tuple[str] = sphinx_config.extensions
-    # for sphinx_extension in sphinx_extensions:
-    #     # If the extension has ``wired_setup``, then call it
-    #     target = import_module(sphinx_extension)
-    #     wired_setup = getattr(target, 'wired_setup', None)
-    #     if wired_setup is not None:
-    #         wired_setup(registry)
-
-    # Look for wired_setup in conf.py
-    # run_wired_setup(registry, sphinx_config)
-
-    # Wire up site
-    # themester_root: Site = getattr(sphinx_config, 'themester_root', None)
-    # if themester_root is not None:
-    #     # We are customizing the root
-    #     registry.register_singleton(themester_root, Root)
-
-    return
 
 
 def run_hopscotch_setup(
     registry: Registry,
     sphinx_config: Config,
 ):
-    """Look for ``wired_setup`` in conf.py."""
-    # Start by adding the path to conf.py to the python path.
-
+    """Look for ``hopscotch_setup`` in conf.py and Sphinx extensions."""
     raw_config = getattr(sphinx_config, '_raw_config', False)
     if not raw_config:
         # We are probably using the mock, so skip any processing
@@ -49,14 +25,19 @@ def run_hopscotch_setup(
     conf_filename = Path(raw_config['__file__'])
     conf_parent = conf_filename.parent
     sys.path.insert(0, str(conf_parent))
-    try:
-        conf = import_module('conf')
-        wired_setup = getattr(conf, 'hopscotch_setup', None)
-        if wired_setup is not None:
-            wired_setup(registry)
-    except ImportError:
-        # conf.py doesn't have a wired_setup
-        pass
+
+    # Make a list of places to look for the ``hopscotch_setup`` function
+    extensions = sphinx_config.extensions
+    extensions.insert(0, "conf")
+    for extension in extensions:
+        try:
+            target_module = import_module(extension)
+            hopsotch_setup = getattr(target_module, 'hopscotch_setup', None)
+            if hopsotch_setup is not None:
+                hopsotch_setup(registry)
+        except ImportError:
+            # conf.py doesn't have a hopsotch_setup
+            pass
 
 
 def setup(app: Sphinx) -> None:
@@ -72,8 +53,14 @@ def setup(app: Sphinx) -> None:
     # Load the themester core stuff
     site_registry.setup(themester)
 
-    # Look for wired_setup in conf.py
+    # Look for hopsotch_setup in extensions
     run_hopscotch_setup(site_registry, app.config)
+
+    # Make an instance of a Site and register it
+    site_title = app.config["project"]
+    themester_root: Site = getattr(app.config, 'themester_root',
+                                   Site(title=site_title))
+    site_registry.register(themester_root)
 
     # Sphinx wants _static instead of static
     static_dest = StaticDest(dest=PurePosixPath('_static'))
