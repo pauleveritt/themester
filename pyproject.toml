@@ -17,7 +17,7 @@ Changelog = "https://github.com/pauleveritt/themester/releases"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-MarkupSafe = "^2.1.0"
+MarkupSafe = "^2.1.1"
 hopscotch = "^0.3.0"
 viewdom = "^0.6.3"
 
