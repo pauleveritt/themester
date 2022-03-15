@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 from hopscotch import Registry
 
 from themester.sphinx.html_page_context import make_page_context
-from themester.sphinx.xxx_models import PageContext
+from themester.sphinx.models import PageContext
 from themester.sphinx.template_bridge import ThemesterBridge
 
 
@@ -33,7 +33,7 @@ def test_template_bridge_instance(nullster_registry: Registry) -> None:
     """See if we can make an instance of a TemplateBridge."""
     tb = ThemesterBridge()
     context = dict(
-        registry=nullster_registry,
+        context_registry=nullster_registry,
         page_context=page_context,
     )
     rendered = tb.render("", context)

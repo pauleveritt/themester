@@ -5,7 +5,7 @@ from hopscotch import Registry
 from markupsafe import Markup
 from sphinx.application import Sphinx
 
-from themester.sphinx.xxx_models import PageContext, Rellink
+from themester.sphinx.models import PageContext, Rellink
 
 
 def make_page_context(

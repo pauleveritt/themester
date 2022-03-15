@@ -3,7 +3,7 @@ from hopscotch import injectable
 
 from themester.protocols import Resource
 from themester.resources import Site, Document
-from themester.sphinx.xxx_models import PageContext
+from themester.sphinx.models import PageContext
 
 
 @injectable(Resource)

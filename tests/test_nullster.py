@@ -11,7 +11,7 @@ from themester.protocols import Config
 from themester.protocols import View
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def nullster_config(nullster_registry: Registry) -> NullsterConfig:
     """Get the Nullster config instance."""
     nullster_config = nullster_registry.get(Config)

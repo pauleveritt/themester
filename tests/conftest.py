@@ -40,7 +40,7 @@ def site() -> Site:
     return s
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def site_registry(site: Site) -> Registry:
     """A fixture for a configured registry."""
     r = Registry()
@@ -51,7 +51,7 @@ def site_registry(site: Site) -> Registry:
     return r
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def nullster_registry(site_registry: Registry) -> Registry:
     """A registry configured for the Nullster theme."""
     r = Registry(parent=site_registry)
