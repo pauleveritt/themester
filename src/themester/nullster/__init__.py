@@ -25,8 +25,3 @@ def hopscotch_setup(registry: Registry) -> None:
     static_src = StaticSrc(here, source=Path("static"))
     registry.register(static_src)
     registry.scan(views)
-
-
-def setup(app: Sphinx) -> None:
-    """Sphinx extension setup."""
-    pass

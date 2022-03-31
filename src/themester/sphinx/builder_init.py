@@ -45,7 +45,7 @@ def setup(app: Sphinx) -> None:
     site_registry = Registry()
     setattr(app, "site_registry", site_registry)
 
-    # Add the external data in Sphinx
+    # Add the external data from Sphinx class instances
     site_registry.register(app)
     site_registry.register(app.config)
     site_registry.register(app.env)
