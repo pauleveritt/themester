@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 from hopscotch import Registry
 from markupsafe import Markup
 from sphinx.testing.path import path
+from sphinx.testing.util import SphinxTestApp
 
 from themester import nullster
 from themester import url
@@ -62,6 +63,7 @@ def nullster_registry(site_registry: Registry) -> Registry:
 
 @pytest.fixture(scope="session")
 def remove_sphinx_projects(sphinx_test_tempdir):
+    """Clean up after Sphinx runs."""
     # Even upon exception, remove any directory from temp area
     # which looks like a Sphinx project. This ONLY runs once.
     roots_path = Path(sphinx_test_tempdir)
@@ -76,19 +78,22 @@ def remove_sphinx_projects(sphinx_test_tempdir):
 
 
 @pytest.fixture()
-def rootdir(remove_sphinx_projects):
+def rootdir(remove_sphinx_projects) -> path:
+    """Top of the Sphinx document tree."""
     roots = path(os.path.dirname(__file__) or ".").abspath() / "sphinx" / "roots"
     yield roots
 
 
 @pytest.fixture()
-def content(app):
+def content(app: SphinxTestApp) -> None:
+    """The content generated from a Sphinx site."""
     app.build()
     yield app
 
 
 @pytest.fixture()
 def page(content, request) -> BeautifulSoup:
+    """Get the text for a page and convert to BeautifulSoup document."""
     pagename = request.param
     c = (content.outdir / pagename).text()
 

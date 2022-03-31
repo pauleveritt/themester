@@ -1,4 +1,5 @@
 """Test Sphinx's implementation of the resource factory."""
+from typing import cast
 
 import pytest
 
@@ -10,12 +11,13 @@ from themester.sphinx.models import PageContext
 
 @pytest.fixture
 def this_page_context() -> PageContext:
+    """Provide a fake page context for this test."""
     context = dict(
         parents=tuple(),
         rellinks=tuple(),
-        title='Some Page',
+        title="Some Page",
     )
-    pagename = 'somepage'
+    pagename = "somepage"
     toc_num_entries = dict()
     document_metadata = dict()
 
@@ -23,7 +25,8 @@ def this_page_context() -> PageContext:
     return pc
 
 
-def test_resource_factory(nullster_registry, this_page_context):
+def test_resource_factory(nullster_registry, this_page_context) -> None:
+    """See if the resource factory provides a Document."""
     nullster_registry.register(this_page_context)
-    resource: Document = nullster_registry.get(Resource)
+    resource = cast(Document, nullster_registry.get(Resource))
     assert "D1" == resource.title

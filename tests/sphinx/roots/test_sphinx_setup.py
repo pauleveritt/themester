@@ -1,5 +1,4 @@
 """Integration test for Sphinx themester with no theme."""
-
 import pytest
 from bs4 import BeautifulSoup
 

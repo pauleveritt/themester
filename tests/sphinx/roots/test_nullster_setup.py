@@ -1,5 +1,4 @@
 """Integration test for Sphinx with Nullster."""
-
 import pytest
 from bs4 import BeautifulSoup
 
@@ -20,9 +19,11 @@ def test_index(page: BeautifulSoup) -> None:
 
 @pytest.mark.parametrize(
     "page",
-    ["_static/nullster.css", ],
+    [
+        "_static/nullster.css",
+    ],
     indirect=True,
 )
 def test_nullster_static(page: BeautifulSoup) -> None:
     """Did CSS get copied to output directory?"""
-    assert 'body {\n}\n' == str(page)
+    assert "body {\n}\n" == str(page)

@@ -3,11 +3,11 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from hopscotch import Registry
-from sphinx.application import Sphinx
 
+from . import views
 from themester.decorators import config
 from themester.url import StaticSrc
-from . import views
+
 here = Path(__file__)
 
 
