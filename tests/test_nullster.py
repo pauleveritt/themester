@@ -29,4 +29,4 @@ def test_index_view(nullster_registry: Registry) -> None:
     assert view.page_title == "View"
     assert view.resource_title == "D1"
     result = render(view(), registry=nullster_registry)
-    assert "<title>D1 - View</title>" == result
+    assert "<title>D1 - View</title>" in result

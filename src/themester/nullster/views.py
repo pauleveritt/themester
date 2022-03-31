@@ -2,8 +2,8 @@
 from dataclasses import dataclass
 
 from hopscotch.operators import get
-from viewdom import html
 from viewdom import VDOM
+from viewdom import html
 
 from themester.decorators import view
 from themester.protocols import Resource
@@ -19,4 +19,14 @@ class IndexView:
 
     def __call__(self) -> VDOM:
         """Render the view."""
-        return html(f"<title>{self.resource_title} - {self.page_title}</title>")
+        # language=HTML
+        return html(f"""
+<html lang="en">
+  <head>
+    <title>{self.resource_title} - {self.page_title}</title>
+  </head>
+  <body>
+  <main>{self.resource_title} - {self.page_title}</main>  
+  </body> 
+</html>
+        """)

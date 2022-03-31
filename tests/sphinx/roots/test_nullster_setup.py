@@ -26,4 +26,4 @@ def test_index(page: BeautifulSoup) -> None:
 )
 def test_nullster_static(page: BeautifulSoup) -> None:
     """Did CSS get copied to output directory?"""
-    assert "body {\n}\n" == str(page)
+    assert "body {" in str(page)
