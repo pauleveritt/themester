@@ -5,7 +5,7 @@ from hopscotch import Registry
 from viewdom import html
 from viewdom import VDOM
 
-from themester.decorators import view
+from themester.protocols import View
 
 extensions = [
     "themester.sphinx",
@@ -14,7 +14,6 @@ extensions = [
 ]
 
 
-@view()
 @dataclass
 class DefaultView:
     """Base view for all pages."""
@@ -26,4 +25,4 @@ class DefaultView:
 
 def hopscotch_setup(registry: Registry) -> None:
     """Setup this site."""
-    registry.scan()
+    registry.register(DefaultView, kind=View)

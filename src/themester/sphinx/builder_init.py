@@ -1,6 +1,6 @@
 """Services for the builder init Sphinx event."""
-import sys
-from importlib import import_module, util
+from importlib import import_module
+from importlib import util
 from pathlib import Path
 from pathlib import PurePosixPath
 
@@ -23,9 +23,19 @@ def run_hopscotch_setup(
         # We are probably using the mock, so skip any processing
         return
     # noinspection PyUnresolvedReferences
-    conf_filename = Path(raw_config['__file__'])
-    conf_parent = conf_filename.parent
-    sys.path.insert(0, str(conf_parent))
+    # This nonsense is all because of the registry.scan() and
+    # caller_module() stuff in Hopscotch means we can't have more
+    # than one conf.py per test run. So for now, no scanning in
+    # conf.py.
+    conf_filename = raw_config["__file__"]
+    parent = Path(conf_filename).parent.name
+    spec = util.spec_from_file_location(f"{parent}_conf", conf_filename)
+    siteconf_module = util.module_from_spec(spec)
+    spec.loader.exec_module(siteconf_module)
+    hopsotch_setup = getattr(siteconf_module, "hopscotch_setup", None)
+    if hopsotch_setup is not None:
+        hopsotch_setup(registry)
+    registry.scan(siteconf_module)
 
     # Make a list of places to look for the ``hopscotch_setup`` function
     extensions = sphinx_config.extensions
