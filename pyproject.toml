@@ -22,7 +22,7 @@ hopscotch = "^0.3.0"
 viewdom = "^0.6.3"
 
 [tool.poetry.dev-dependencies]
-pytest = "^7.0.1"
+pytest = "^7.2.1"
 coverage = {extras = ["toml"], version = "^6.1"}
 safety = "^1.10.3"
 mypy = "^0.931"
