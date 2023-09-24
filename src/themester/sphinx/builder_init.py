@@ -55,13 +55,13 @@ def setup(app: Sphinx) -> None:
     site_registry = Registry()
     setattr(app, "site_registry", site_registry)  # noqa: B010
 
+    # Load the themester/Sphinx core stuff
+    site_registry.setup(themester)
+
     # Add the external data from Sphinx class instances
     site_registry.register(app)
     site_registry.register(app.config)
     site_registry.register(app.env)
-
-    # Load the themester/Sphinx core stuff
-    site_registry.setup(themester)
 
     # Look for hopsotch_setup in extensions
     run_hopscotch_setup(site_registry, app.config)

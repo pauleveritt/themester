@@ -2,11 +2,12 @@
 from dataclasses import dataclass
 
 from hopscotch.operators import get
-from viewdom import VDOM
 from viewdom import html
+from viewdom import VDOM
 
 from themester.decorators import view
 from themester.protocols import Resource
+from themester.url import StaticRelativePath
 
 
 @view()
@@ -14,19 +15,23 @@ from themester.protocols import Resource
 class IndexView:
     """Default view for all contexts."""
 
+    srp: StaticRelativePath
     resource_title: str = get(Resource, attr="title")
     page_title: str = "View"
 
     def __call__(self) -> VDOM:
         """Render the view."""
-        # language=HTML
-        return html(f"""
+        nullster_css = self.srp("nullster.css")
+        return html(
+            f"""
 <html lang="en">
   <head>
     <title>{self.resource_title} - {self.page_title}</title>
+    <link rel="stylesheet" href="{nullster_css}"/>
   </head>
   <body>
-  <main>{self.resource_title} - {self.page_title}</main>  
-  </body> 
+  <main>{self.resource_title} - {self.page_title}</main>
+  </body>
 </html>
-        """)
+        """
+        )
