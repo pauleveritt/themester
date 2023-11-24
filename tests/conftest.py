@@ -92,9 +92,9 @@ def content(app: SphinxTestApp) -> None:
 
 
 @pytest.fixture()
-def page(content, request) -> BeautifulSoup:
+def page(content: SphinxTestApp, request) -> BeautifulSoup:
     """Get the text for a page and convert to BeautifulSoup document."""
     pagename = request.param
-    c = (content.outdir / pagename).text()
+    c = (content.outdir / pagename).read_text()
 
     yield BeautifulSoup(c, "html.parser")
