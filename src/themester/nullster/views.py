@@ -27,7 +27,7 @@ class IndexView:
 <html lang="en">
   <head>
     <title>{self.resource_title} - {self.page_title}</title>
-    <link rel="stylesheet" href="{nullster_css}"/>
+    <link rel="stylesheet" href={nullster_css!s}/>
   </head>
   <body>
   <main>{self.resource_title} - {self.page_title}</main>

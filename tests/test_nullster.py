@@ -2,6 +2,7 @@
 from typing import cast
 
 import pytest
+from bs4 import BeautifulSoup
 from hopscotch import Registry
 from viewdom import render
 
@@ -23,10 +24,18 @@ def test_config(nullster_config: NullsterConfig) -> None:
     assert "My Nullster Site" == nullster_config.site_title
 
 
+def test_nullster_registry(nullster_registry: Registry) -> None:
+    """Ensure the Nullster registry is wired up correctly."""
+    view = nullster_registry.get(View)
+    assert isinstance(view, IndexView)
+
+
 def test_index_view(nullster_registry: Registry) -> None:
     """Check the index view."""
     view = cast(IndexView, nullster_registry.get(View))
     assert view.page_title == "View"
     assert view.resource_title == "D1"
     result = render(view(), registry=nullster_registry)
-    assert "<title>D1 - View</title>" in result
+    page = BeautifulSoup(result, "html.parser")
+    assert "D1 - View" == page.select_one("title").text
+    assert "static/nullster.css" == page.select_one("link").attrs["href"]
