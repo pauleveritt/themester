@@ -1,8 +1,9 @@
-[tool.poetry]
+[project]
 name = "themester"
-version = "0.0.0"
+dynamic = ["version"]
+build-targets = ["wheel"]
 description = "Themester"
-authors = ["Paul Everitt <pauleveritt@me.com>"]
+authors = [{ name = "Paul Everitt", email = "pauleveritt@me.com" }]
 license = "MIT"
 readme = "README.rst"
 homepage = "https://github.com/pauleveritt/themester"
@@ -10,45 +11,49 @@ repository = "https://github.com/pauleveritt/themester"
 documentation = "https://themester.readthedocs.io"
 classifiers = [
     "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.10",
+]
+requires-python = ">=3.10"
+dependencies = [
+    "MarkupSafe~=2.1.0",
+    "hopscotch~=0.3.0",
+    "viewdom~=0.6.3",
 ]
 
-[tool.poetry.urls]
+[tool.hatch.urls]
 Changelog = "https://github.com/pauleveritt/themester/releases"
 
-[tool.poetry.dependencies]
-python = "^3.10"
-MarkupSafe = "^2.1.0"
-hopscotch = "^0.3.0"
-viewdom = "^0.6.3"
 
-[tool.poetry.dev-dependencies]
-pytest = "^7.0.1"
-coverage = {extras = ["toml"], version = "^6.1"}
-safety = "^1.10.3"
-mypy = "^0.931"
-typeguard = "^2.13.3"
-xdoctest = {extras = ["colors"], version = "^0.15.10"}
-sphinx = "^4.3.2"
-sphinx-autobuild = ">=2021.3.14"
-pre-commit = "^2.17.0"
-flake8 = "^4.0.1"
-black = ">=21.10b0"
-flake8-bandit = "^3.0.0"
-flake8-bugbear = "^22.1.11"
-flake8-docstrings = "^1.6.0"
-flake8-rst-docstrings = "^0.2.5"
-pep8-naming = "^0.12.1"
-darglint = "^1.8.1"
-reorder-python-imports = "^2.6.0"
-pre-commit-hooks = "^4.0.1"
-sphinx-click = "^3.0.2"
-Pygments = "^2.11.2"
-pyupgrade = "^2.31.0"
-furo = ">=2021.11.12"
-nox = "^2022.1.7"
-nox-poetry = "^0.9.0"
+[tool.hatch.version]
+path = "src/themester/version.py"
 
-[tool.poetry.scripts]
+[tool.hatch.envs.test]
+dependencies = [
+    "typeguard~=2.13.3",
+    "pytest~=7.4.3",
+    "sybil~=3.0.1",
+    "coverage[toml]~=6.3",
+    "pytest-cov~=4.1.0",
+    "ruff~=0.1.8",
+    "ruff-lsp~=0.0.45",
+    "sphinx~=4.4.0"
+]
+
+[tool.hatch.envs.pre-commit]
+dependencies = [
+    "ruff~=0.1.8",
+    "pre-commit~=3.5.0",
+    "pre-commit-hooks~=4.1.0",
+]
+
+[tool.hatch.envs.mypy]
+dependencies = [
+    "mypy~=1.7",
+]
+
+[project.scripts]
 themester = "themester.__main__:main"
 
 [tool.coverage.paths]
@@ -71,6 +76,78 @@ show_column_numbers = true
 show_error_codes = true
 show_error_context = true
 
+
+[tool.hatch.envs.safety]
+dependencies = [
+    "safety~=2.3.5",
+]
+
+[tool.hatch.envs.docs-build]
+dependencies = [
+    "sphinx~=4.4.0",
+    "sphinx-autobuild~=2021.3.14",
+    "Pygments~=2.11.2",
+    "pyupgrade~=2.31.0",
+    "furo~=2022.3.4",
+    "myst-parser~=0.17.0",
+    ]
+
+[[tool.hatch.envs.test.matrix]]
+python = ["3.10", "3.11", "3.12"]
+
+[[tool.hatch.envs.pre-commit.matrix]]
+python = ["3.12"]
+
+[[tool.hatch.envs.mypy.matrix]]
+python = ["3.12"]
+
+[[tool.hatch.envs.safety.matrix]]
+python = ["3.12"]
+
+[[tool.hatch.envs.docs-build.matrix]]
+python = ["3.12"]
+
+[tool.hatch.envs.test.scripts]
+run = "pytest --cov-config=pyproject.toml --cov=pkg --cov=tests"
+lint = "ruff check src/themester tests docs/conf.py && ruff format --check src/themester tests docs/conf.py"
+format = "ruff check --fix src/themester tests docs/conf.py && ruff format src/themester tests docs/conf.py"
+
+[tool.hatch.envs.pre-commit.scripts]
+run = "pre-commit run --all-files --show-diff-on-failure"
+install = "pre-commit install"
+
+[tool.hatch.envs.mypy.scripts]
+run = "mypy src/themester tests docs/conf.py"
+
+[tool.hatch.envs.safety.scripts]
+run = "hatch -e safety.py3.12 dep show requirements | safety check --full-report --stdin"
+
+[tool.hatch.envs.docs-build.scripts]
+run = "sphinx-build docs docs/_build"
+
+[tool.ruff]
+line-length = 88
+extend-select = ['B','B9','C','D','E','F','N','S','W']
+flake8-quotes = {inline-quotes = 'double', multiline-quotes = 'double'}
+target-version = 'py310'
+ignore = ['E203','E501','N802','B009','B010']
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.extend-per-file-ignores]
+"tests/*" = ["S101"]
+"examples/*" = ["S101"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
