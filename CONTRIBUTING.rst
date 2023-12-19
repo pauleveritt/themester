@@ -45,28 +45,16 @@ How to set up your development environment
 
 You need Python 3.7+ and the following tools:
 
-- Poetry_
-- Nox_
-- nox-poetry_
-
-Install the package with development requirements:
-
-.. code:: console
-
-   $ poetry install
+- Hatch_
 
 You can now run an interactive Python session,
 or the command-line interface:
 
 .. code:: console
 
-   $ poetry run python
-   $ poetry run themester
+   $ hatch shell
 
-.. _Poetry: https://python-poetry.org/
-.. _Nox: https://nox.thea.codes/
-.. _nox-poetry: https://nox-poetry.readthedocs.io/
-
+.. _Hatch: https://hatch.pypa.io/latest/
 
 How to test the project
 -----------------------
@@ -75,26 +63,28 @@ Run the full test suite:
 
 .. code:: console
 
-   $ nox
+   $ hatch run test:run
 
-List the available Nox sessions:
-
-.. code:: console
-
-   $ nox --list-sessions
-
-You can also run a specific Nox session.
-For example, invoke the unit test suite like this:
-
-.. code:: console
-
-   $ nox --session=tests
 
 Unit tests are located in the ``tests`` directory,
 and are written using the pytest_ testing framework.
 
 .. _pytest: https://pytest.readthedocs.io/
 
+How to set up your PyCharm environment
+--------------------------------------
+
+Get test virtualenv interpreter path from hatch:
+
+.. code:: console
+
+   $ hatch env find test.py3.12
+
+
+You should set up an existing virtualenv interpreter in PyCharm with the path from the previous command.
+`follow these instructions`_ for Existing virtual environment
+
+.. _follow these instructions: https://www.jetbrains.com/help/pycharm/creating-virtual-environment.html
 
 How to submit changes
 ---------------------
@@ -103,7 +93,6 @@ Open a `pull request`_ to submit changes to this project.
 
 Your pull request needs to meet the following guidelines for acceptance:
 
-- The Nox test suite must pass without errors and warnings.
 - Include unit tests. This project maintains 100% code coverage.
 - If your changes add functionality, update the documentation accordingly.
 
@@ -113,7 +102,7 @@ To run linting and code formatting checks before committing your change, you can
 
 .. code:: console
 
-   $ nox --session=pre-commit -- install
+   $ hatch run pre-commit:install
 
 It is recommended to open an issue before starting work on anything.
 This will allow a chance to talk it over with the owners and validate your approach.
