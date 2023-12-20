@@ -37,7 +37,8 @@ dependencies = [
     "pytest-cov~=4.1.0",
     "ruff~=0.1.8",
     "ruff-lsp~=0.0.45",
-    "sphinx~=4.4.0"
+    "sphinx~=4.4.0",
+    "beautifulsoup4~=4.12.2"
 ]
 
 [tool.hatch.envs.pre-commit]
