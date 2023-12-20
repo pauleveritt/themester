@@ -43,7 +43,7 @@ Request features on the `Issue Tracker`_.
 How to set up your development environment
 ------------------------------------------
 
-You need Python 3.7+ and the following tools:
+You need Python 3.11+ and the following tools:
 
 - Hatch_
 
@@ -74,7 +74,15 @@ and are written using the pytest_ testing framework.
 How to set up your PyCharm environment
 --------------------------------------
 
-Get test virtualenv interpreter path from hatch:
+First, make a virtual environment by running the Hatch `test:run` under Python 3.12:
+
+.. code-block:: console
+
+  $ hatch run +py=3.12 test:run
+
+This should create a `.venv` directory in your project root with the dependencies for the `test` environment.
+
+Run this to confirm the path to the test virtualenv interpreter path from hatch:
 
 .. code:: console
 

@@ -49,15 +49,15 @@ def test_find_resource_missing_slash(site: Site) -> None:
     path = PurePosixPath("f1/XXX")
     with pytest.raises(ValueError) as exc:
         find_resource(site, path)
-    expected = 'ResourceLike path "f1/XXX" must start with a slash'
+    expected = "ResourceLike path 'f1/XXX' must start with a slash"
     assert expected == exc.value.args[0]
 
 
 @pytest.mark.parametrize(
     "path, expected",
     [
-        (PurePosixPath("/XXX"), 'No resource at path "/XXX"'),
-        (PurePosixPath("/f1/XXX"), 'No resource at path "/f1/XXX"'),
+        (PurePosixPath("/XXX"), "No resource at path '/XXX'"),
+        (PurePosixPath("/f1/XXX"), "No resource at path '/f1/XXX'"),
     ],
 )
 def test_find_resource_failed(path: PurePosixPath, expected: str, site: Site) -> None:
@@ -189,6 +189,20 @@ def test_relative_path(
     """Check relative paths between a source and a target."""
     result = relative_path(current, target)
     assert expected == result
+
+
+def test_relative_path_source_missing_slash() -> None:
+    """The source must start with a slash, ensure exception is thrown."""
+    with pytest.raises(ValueError) as exc:
+        relative_path(PurePosixPath("xxx"), PurePosixPath("yyy"))
+    assert "Source path 'xxx' must start with a slash" == exc.value.args[0]
+
+
+def test_relative_path_target_missing_slash() -> None:
+    """The target must start with a slash, ensure exception is thrown."""
+    with pytest.raises(ValueError) as exc:
+        relative_path(PurePosixPath("/xxx"), PurePosixPath("yyy"))
+    assert "Target path 'yyy' must start with a slash" == exc.value.args[0]
 
 
 @pytest.mark.parametrize(

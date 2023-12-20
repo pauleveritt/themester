@@ -4,6 +4,7 @@ from pathlib import Path
 
 from hopscotch import Registry
 
+from . import views
 from themester.decorators import config
 from themester.url import StaticSrc
 
@@ -23,3 +24,4 @@ def hopscotch_setup(registry: Registry) -> None:
     """Setup this package."""
     static_src = StaticSrc(here, source=Path("static"))
     registry.register(static_src)
+    registry.scan(views)

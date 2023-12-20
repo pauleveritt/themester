@@ -1,7 +1,14 @@
 """Test fixtures."""
+import os
+from pathlib import Path
+from shutil import rmtree
+
 import pytest
+from bs4 import BeautifulSoup
 from hopscotch import Registry
 from markupsafe import Markup
+from sphinx.testing.path import path
+from sphinx.testing.util import SphinxTestApp
 
 from themester import nullster
 from themester import url
@@ -9,6 +16,10 @@ from themester.protocols import Resource
 from themester.resources import Document
 from themester.resources import Folder
 from themester.resources import Site
+
+pytest_plugins = [
+    "sphinx.testing.fixtures",
+]
 
 
 @pytest.fixture(scope="session")
@@ -30,7 +41,7 @@ def site() -> Site:
     return s
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def site_registry(site: Site) -> Registry:
     """A fixture for a configured registry."""
     r = Registry()
@@ -41,10 +52,49 @@ def site_registry(site: Site) -> Registry:
     return r
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def nullster_registry(site_registry: Registry) -> Registry:
     """A registry configured for the Nullster theme."""
     r = Registry(parent=site_registry)
     r.setup(nullster)
     r.scan(nullster)
     return r
+
+
+@pytest.fixture(scope="session")
+def remove_sphinx_projects(sphinx_test_tempdir):
+    """Clean up after Sphinx runs."""
+    # Even upon exception, remove any directory from temp area
+    # which looks like a Sphinx project. This ONLY runs once.
+    roots_path = Path(sphinx_test_tempdir)
+    for d in roots_path.iterdir():
+        if d.is_dir():
+            build_dir = Path(d, "_build")
+            if build_dir.exists():
+                # This directory is a Sphinx project, remove it
+                rmtree(str(d))
+
+    yield
+
+
+@pytest.fixture()
+def rootdir(remove_sphinx_projects) -> path:
+    """Top of the Sphinx document tree."""
+    roots = path(os.path.dirname(__file__) or ".").abspath() / "sphinx" / "roots"
+    yield roots
+
+
+@pytest.fixture()
+def content(app: SphinxTestApp) -> None:
+    """The content generated from a Sphinx site."""
+    app.build()
+    yield app
+
+
+@pytest.fixture()
+def page(content: SphinxTestApp, request) -> BeautifulSoup:
+    """Get the text for a page and convert to BeautifulSoup document."""
+    pagename = request.param
+    c = (content.outdir / pagename).read_text()
+
+    yield BeautifulSoup(c, "html.parser")

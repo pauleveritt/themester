@@ -13,9 +13,8 @@ classifiers = [
     "Development Status :: 3 - Alpha",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.10",
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
     "MarkupSafe~=2.1.0",
     "hopscotch~=0.3.0",
@@ -38,7 +37,8 @@ dependencies = [
     "pytest-cov~=4.1.0",
     "ruff~=0.1.8",
     "ruff-lsp~=0.0.45",
-    "sphinx~=4.4.0"
+    "sphinx~=4.4.0",
+    "beautifulsoup4~=4.12.2"
 ]
 
 [tool.hatch.envs.pre-commit]
@@ -93,7 +93,7 @@ dependencies = [
     ]
 
 [[tool.hatch.envs.test.matrix]]
-python = ["3.10", "3.11", "3.12"]
+python = ["3.11", "3.12"]
 
 [[tool.hatch.envs.pre-commit.matrix]]
 python = ["3.12"]
@@ -124,6 +124,8 @@ run = "hatch -e safety.py3.12 dep show requirements | safety check --full-report
 
 [tool.hatch.envs.docs-build.scripts]
 run = "sphinx-build docs docs/_build"
+autobuild = "sphinx-autobuild docs docs/_build"
+autonullster = "sphinx-autobuild --port 8088 tests/sphinx/roots/test-nullster-setup tests/sphinx/roots/test-nullster-setup/_build"
 
 [tool.ruff]
 line-length = 88

@@ -46,7 +46,8 @@ def find_resource(root: Site, path: PurePosixPath) -> Resource:
     if not path.is_absolute():
         # ResourceLike paths must start with a slash, so this is
         # probably a static resource path
-        m = f'ResourceLike path "{path}" must start with a slash'
+        str_path = str(path)
+        m = f"ResourceLike path {str_path!r} must start with a slash"
         raise ValueError(m)
 
     # "Normalize" the path if it ends with ``index``.
@@ -63,7 +64,8 @@ def find_resource(root: Site, path: PurePosixPath) -> Resource:
             try:
                 result = result[part]  # type: ignore
             except KeyError:  # noqa: B904
-                m = f'No resource at path "{path}"'
+                this_path = str(path)
+                m = f"No resource at path {this_path!r}"
                 raise KeyError(m)  # noqa: B904
         except StopIteration:
             break
@@ -134,11 +136,13 @@ def relative_path(
         ValueError: Trying to get an invalid path.
     """
     if not current.is_absolute():
-        m = f'Source path "{str(current)}" must start with a slash'
+        str_current = str(current)
+        m = f"Source path {str_current!r} must start with a slash"
         raise ValueError(m)
 
     if static_prefix is None and not target.is_absolute():
-        m = f'Target path "{str(target)}" must start with a slash'
+        str_target = str(target)
+        m = f"Target path {str_target!r} must start with a slash"
         raise ValueError(m)
 
     # Do an optimization...bail out immediately if the same, but make
