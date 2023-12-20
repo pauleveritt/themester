@@ -9,7 +9,7 @@ from viewdom import VDOM
 from themester.protocols import View
 from themester.url import StaticSrc
 
-extensions = ["themester.sphinx", "myst_parser"]
+extensions = ["themester.sphinx"]
 here = Path(__file__)
 
 

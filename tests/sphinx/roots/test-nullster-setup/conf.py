@@ -9,7 +9,6 @@ from themester.protocols import View
 
 extensions = [
     "themester.sphinx",
-    "myst_parser",
     "themester.nullster",
 ]
 
