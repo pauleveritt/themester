@@ -1,9 +1,8 @@
 """Themester."""
-from hopscotch import Registry
-
-from themester import url
 
 
-def hopscotch_setup(registry: Registry) -> None:
+
+def hopscotch_setup(registry) -> None:
     """Setup this package."""
-    registry.scan(url)
+    pass
+    # registry.scan(url)

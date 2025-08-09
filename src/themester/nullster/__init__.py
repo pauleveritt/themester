@@ -2,8 +2,8 @@
 from dataclasses import dataclass
 from pathlib import Path
 
-from hopscotch import Registry
-
+class Registry:
+    pass
 from . import views
 from themester.decorators import config
 from themester.url import StaticSrc
