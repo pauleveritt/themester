@@ -8,7 +8,7 @@ project = "themester-setup"
 extensions = ["themester.sphinx"]
 
 
-def custom_view(container: Container):
+def custom_view(svcs_container: Container):
     return "This is a custom view"
 
 
