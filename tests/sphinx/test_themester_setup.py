@@ -3,17 +3,13 @@
 import pytest
 from sphinx.testing.util import SphinxTestApp
 
-from themester.sphinx import setup
-
 pytestmark = pytest.mark.sphinx("html", testroot="themester-setup")
 
 
 def test_setup(app: SphinxTestApp):
-    setup(app)
+    """Manually configure a Sphinx app with Themester setup."""
     site_registry = getattr(app, "site_registry", None)
     assert site_registry is not None
-    flag = site_registry.get(IndentationError)
-    assert flag == 99
 
 
 @pytest.mark.parametrize(

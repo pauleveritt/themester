@@ -3,13 +3,11 @@
 import pytest
 from sphinx.testing.util import SphinxTestApp
 
-from themester.sphinx import setup
 
 pytestmark = pytest.mark.sphinx("html", testroot="basic-sphinx")
 
 
 def test_setup(app: SphinxTestApp):
-    setup(app)
     assert pytestmark.kwargs["testroot"] == app.config.project
 
 
