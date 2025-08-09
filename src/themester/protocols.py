@@ -1,7 +1,10 @@
 """Reusable PEP 544 protocols."""
+
 from __future__ import annotations
 
-from viewdom import VDOM
+from typing import Protocol
+
+from svcs import Container
 
 
 class Resource:
@@ -12,15 +15,15 @@ class Resource:
     title: str | None
 
 
-class View:
-    """A callable that renders to a VDOM."""
+class View(Protocol):
+    """Protocol for callables that render views into stringables."""
 
-    def __call__(self) -> VDOM:
-        """Render a template into a VDOM."""
-        raise NotImplementedError
+    def __call__(self, *, container: Container) -> str:
+        """Use the container to make a string."""
+        ...
 
 
 class Config:
-    """A marker class for configuration information."""
+    """A marker for config information across all backends."""
 
     pass

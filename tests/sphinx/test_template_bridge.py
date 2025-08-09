@@ -1,41 +1,32 @@
-"""Test the template bridge."""
+"""Ensure the Sphinx Template Bridge is replaced and uses the container."""
+
 import pytest
-from bs4 import BeautifulSoup
-from hopscotch import Registry
+from svcs import Container
 
-from themester.sphinx.html_page_context import make_page_context
-from themester.sphinx.models import PageContext
-from themester.sphinx.template_bridge import ThemesterBridge
+from themester.sphinx.template_bridge import TemplateBridge
+from themester.protocols import View
 
 
-@pytest.fixture
-def page_context() -> PageContext:
-    """Provide a mocked page context."""
-    context = dict(
-        parents=tuple(),
-        rellinks=tuple(),
-        title="Some Page",
-    )
-    pagename = "somepage"
-    toc_num_entries = dict()
-    document_metadata = dict()
+def test_render():
+    """Test that render gets a View from the container."""
 
-    pc = make_page_context(context, pagename, toc_num_entries, document_metadata)
-    return pc
+    def get_view(container: Container) -> str:
+        return "Some View Result"
 
-
-def test_page_context(page_context: PageContext) -> None:
-    """Ensure fixture works ok."""
-    assert "somepage" == page_context.pagename
+    this_container = {
+        View: get_view,
+    }
+    context = {"container": this_container}
+    tb = TemplateBridge()
+    result = tb.render("some_template", context)
+    assert result == "Some View Result"
 
 
-def test_template_bridge_instance(nullster_registry: Registry) -> None:
-    """See if we can make an instance of a TemplateBridge."""
-    tb = ThemesterBridge()
-    context = dict(
-        context_registry=nullster_registry,
-        page_context=page_context,
-    )
-    rendered = tb.render("", context)
-    result = BeautifulSoup(rendered, "html.parser")
-    assert "D1 - View" == result.select_one("title").text
+def test_no_container():
+    """Throw an exception when the context has no container.."""
+
+    # Missing the "container"
+    context = {}
+    tb = TemplateBridge()
+    with pytest.raises(KeyError):
+        tb.render("some_template", context)
