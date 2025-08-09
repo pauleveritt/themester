@@ -22,14 +22,21 @@ class ThemesterBridge(BuiltinTemplateLoader):
         container: Container = context["container"]
 
         # Get the correct view from the container and render it.
+        # TODO People are going to want alternative policies so make this
+        #   a pluggable factory in the registry.
         try:
             view = container.get(View)
         except ServiceNotFoundError:
             # Fall back to regular Sphinx-Jinja rendering
             return super(ThemesterBridge, self).render(template_or_viewpage, context)
 
-        # We might later make it more convenient for Jinja-based views that
-        # don't want to set up a Jinja environment and do the render.
-        # We could sniff here to see what kind of view it is.
-        result = view(container=container)
-        return result
+        # Class-based view vs. function view
+        if hasattr(view, "render"):
+            result = view.render()
+            return result
+        elif type(view) is str:
+            result = str(view)
+            return result
+
+        # Otherwise, something went wrong.
+        raise ValueError("View was neither a string nor a callable")

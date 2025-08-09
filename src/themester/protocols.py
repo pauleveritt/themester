@@ -15,12 +15,22 @@ class Resource:
     title: str | None
 
 
+class FunctionView(Protocol):
+    """Protocol for callables that render views into stringables."""
+
+    def __call__(self, *, container: Container) -> str:
+        """Use the container to make a string."""
+        ...
+
+
 class View(Protocol):
     """Protocol for callables that render views into stringables."""
 
     def __call__(self, *, container: Container) -> str:
         """Use the container to make a string."""
         ...
+
+    def render(self) -> str: ...
 
 
 class Config:

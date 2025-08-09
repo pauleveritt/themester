@@ -1,28 +1,40 @@
 """Ensure the Sphinx Template Bridge is replaced and uses the container."""
 
 import pytest
-from sphinx.testing.util import SphinxTestApp
 from svcs import Container
 
-from themester.sphinx.template_bridge import ThemesterBridge
 from themester.protocols import View
+from themester.sphinx.template_bridge import ThemesterBridge
 
 pytestmark = pytest.mark.sphinx("html", testroot="themester-setup")
 
 
-def test_render():
+def test_render_function_view():
     """Test that render gets a View from the container."""
 
-    def get_view(container: Container) -> str:
-        return "Some View Result"
-
     this_container = {
-        View: get_view,
+        View: "FunctionView Result",
     }
     context = {"container": this_container}
     tb = ThemesterBridge()
     result = tb.render("some_template", context)
-    assert result == "Some View Result"
+    assert result == "FunctionView Result"
+
+
+def test_render_class_view():
+    """Test that render gets a class-based View from the container."""
+
+    class CustomView:
+        def render(self):
+            return "ClassView Result"
+
+    this_container = {
+        View: CustomView(),
+    }
+    context = {"container": this_container}
+    tb = ThemesterBridge()
+    result = tb.render("some_template", context)
+    assert result == "ClassView Result"
 
 
 def test_no_container():
