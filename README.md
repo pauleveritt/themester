@@ -84,20 +84,3 @@ Issues
 
 If you encounter any problems,
 please `file an issue`_ along with a detailed description.
-
-
-Credits
--------
-
-This project was generated from `@cjolowicz`_'s `Hypermodern Python Cookiecutter`_ template.
-
-.. _@cjolowicz: https://github.com/cjolowicz
-.. _Cookiecutter: https://github.com/audreyr/cookiecutter
-.. _MIT license: https://opensource.org/licenses/MIT
-.. _PyPI: https://pypi.org/
-.. _Hypermodern Python Cookiecutter: https://github.com/cjolowicz/cookiecutter-hypermodern-python
-.. _file an issue: https://github.com/pauleveritt/themester/issues
-.. _pip: https://pip.pypa.io/
-.. github-only
-.. _Contributor Guide: CONTRIBUTING.rst
-.. _Usage: https://themester.readthedocs.io/en/latest/usage.html
