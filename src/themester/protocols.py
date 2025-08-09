@@ -7,14 +7,6 @@ from typing import Protocol
 from svcs import Container
 
 
-class Resource:
-    """A location-aware node in the resource tree."""
-
-    name: str | None
-    parent: Resource | None
-    title: str | None
-
-
 class FunctionView(Protocol):
     """Protocol for callables that render views into stringables."""
 
@@ -34,9 +26,3 @@ class _ClassView(Protocol):
 
 
 View = _FunctionView | _ClassView
-
-
-class Config:
-    """A marker for config information across all backends."""
-
-    pass

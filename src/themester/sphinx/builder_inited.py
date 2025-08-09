@@ -5,6 +5,8 @@ from sphinx.application import (
     Config as SphinxConfig,
     BuildEnvironment as SphinxBuildEnvironment,
 )
+from sphinx.builders import Builder
+
 
 from svcs import Registry
 from venusian import Scanner
@@ -19,6 +21,7 @@ def setup(app: Sphinx) -> None:
     site_registry.register_value(Sphinx, app)
     site_registry.register_value(SphinxConfig, app.config)
     site_registry.register_value(SphinxBuildEnvironment, app.env)
+    site_registry.register_value(Builder, app.builder)
 
     # Make a Venusian scanner and put it in the registry. Also, put
     # the registry on the scanner so decorators can get to it and

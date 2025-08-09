@@ -5,6 +5,9 @@ from typing import Any, Generator
 
 import pytest
 from sphinx.testing.util import SphinxTestApp
+# from svcs import Registry
+#
+# from themester.resources import Site, Folder, Document
 
 pytest_plugins = ("sphinx.testing.fixtures",)
 
@@ -38,7 +41,9 @@ def page(content: SphinxTestApp, request) -> Generator[Any, Any, None]:
 #
 # import pytest
 # from bs4 import BeautifulSoup
-# from markupsafe import Markup
+from markupsafe import Markup
+
+
 # from sphinx.testing.path import path
 # from sphinx.testing.util import SphinxTestApp
 #
@@ -78,12 +83,15 @@ def page(content: SphinxTestApp, request) -> Generator[Any, Any, None]:
 # @pytest.fixture
 # def site_registry(site: Site) -> Registry:
 #     """A fixture for a configured registry."""
-#     r = Registry()
+#     registry = Registry()
+#     registry.register_value(Site, site)
 #     r.register(site)
 #     r.scan(url)
 #     current_resource = site["d1"]
 #     r.register(current_resource, kind=Resource)
 #     return r
+#
+
 #
 #
 # @pytest.fixture
