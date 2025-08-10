@@ -2,10 +2,22 @@
 
 Running log of notes to later turn into docs.
 
+## Aug 10 2025
+
+
+
 ## Aug 9 2025
 
 Adam Turner messaged me, interested in the registry and view ideas. Let's bring `themester-sphinx` back in and get
 everything working again.
+
+I put everything in `themester.sphinx` for now. The first focus: just getting everything from the `themester-sphinx`
+package copied over. Let's go back to making Themester a Sphinx-first for now.
+
+The big effort: extracting `PathTo` into a service. The real Sphinx implementation, not my previous Themester nor Goku
+services that were not tied to Sphinx. It was important to have a backwards-compatible starting point.
+
+I'm still going to need the neutral ones. But I will do this *after* I branch off from a PoC for Adam.
 
 ## May 31
 
