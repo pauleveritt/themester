@@ -4,7 +4,8 @@ Running log of notes to later turn into docs.
 
 ## Aug 10 2025
 
-
+I'll start by moving stuff back into being self-contained in `themester.sphinx` and not focus for now on portable stuff.
+Starting with `models.py` and `services.py`.
 
 ## Aug 9 2025
 

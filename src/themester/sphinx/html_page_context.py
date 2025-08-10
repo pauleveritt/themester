@@ -4,9 +4,7 @@ from typing import Any
 
 from markupsafe import Markup
 from sphinx.addnodes import document
-from sphinx.application import (
-    Sphinx,
-)
+from sphinx.application import Sphinx
 from svcs import Container
 
 from themester.sphinx.models import PageContext, Rellink

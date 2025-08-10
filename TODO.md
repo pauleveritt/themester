@@ -1,16 +1,11 @@
 # To Do
 
 ## Now
-
+ 
+- Get `PathTo` into templates as the real `pathto`
 
 ## Next
 
-- Move `protocols.py` stuff into `models.py`
-- Get rid of `themester/sphinx/resource.py`
-- Make `make_page_context` into a factory
-- `SphinxConfig` as a service
-- Adam's `PageContext`
-- Get `PathTo` into templates as the real `pathto`
 
 ## Soon
 
@@ -18,6 +13,7 @@
 - toc
 - View lookup as a service
 - ChainMap implementation
+- Make `make_page_context` into a factory
 
 ## Eventually
 
@@ -38,3 +34,5 @@
 ## Done
 
 - TemplateBridge, html-page-context, and builder-init 
+- Move `protocols.py` stuff into `models.py`
+- Get rid of `themester/sphinx/resource.py`
