@@ -14,7 +14,7 @@ the contract -- for the current "page context".
 """
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Iterable
 from typing import Callable
 from typing import Protocol
 
@@ -93,3 +93,33 @@ class _ClassView(Protocol):
 
 
 View = _FunctionView | _ClassView
+
+
+@dataclass(frozen=True)
+class PageContext:
+    """Per-page info from the underlying system needed by layout."""
+
+    body: object
+    css_files: Iterable
+    display_toc: bool
+    js_files: Iterable
+    pagename: str
+    page_source_suffix: str
+    pathto: Callable[
+        [
+            str,
+        ],
+        str,
+    ]
+    sourcename: str | None
+    templatename: str
+    title: str
+    toc: object
+    builder: str = "html"
+    meta: object = None
+    metatags: str = ""
+    next: object | None = None
+    parents: object = None
+    prev: object | None = None
+    rellinks: object = None
+    toctree: object | None = None
