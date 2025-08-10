@@ -1,4 +1,5 @@
 """Default implementations of resource protocols."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass

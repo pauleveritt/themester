@@ -2,7 +2,7 @@
 
 from svcs import Registry, Container
 
-from themester.protocols import View
+from themester.sphinx.models import View
 
 project = "themester-setup"
 extensions = ["themester.sphinx"]

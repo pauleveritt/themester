@@ -1,11 +1,12 @@
 """Sphinx config file for basic Nullster support."""
+
 from dataclasses import dataclass
 
 from hopscotch import Registry
 from viewdom import html
 from viewdom import VDOM
 
-from themester.protocols import View
+from themester.sphinx.models import View
 
 extensions = [
     "themester.sphinx",

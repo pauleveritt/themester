@@ -4,7 +4,7 @@ import pytest
 from sphinx.testing.util import SphinxTestApp
 from svcs import Registry, Container
 
-from themester.protocols import View
+from themester.sphinx.models import View
 
 pytestmark = pytest.mark.sphinx("html", testroot="custom-view")
 

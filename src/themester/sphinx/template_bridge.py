@@ -6,7 +6,7 @@ from sphinx.jinja2glue import BuiltinTemplateLoader
 from svcs import Container
 from svcs.exceptions import ServiceNotFoundError
 
-from themester.protocols import View
+from themester.sphinx.models import View
 
 
 class ThemesterBridge(BuiltinTemplateLoader):

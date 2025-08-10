@@ -3,7 +3,7 @@
 import pytest
 from svcs import Container
 
-from themester.protocols import View
+from themester.sphinx.models import View
 from themester.sphinx.template_bridge import ThemesterBridge
 
 pytestmark = pytest.mark.sphinx("html", testroot="themester-setup")

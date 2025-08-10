@@ -1,7 +1,5 @@
 """Reusable PEP 544 protocols."""
 
-from __future__ import annotations
-
 from typing import Protocol
 
 from svcs import Container
