@@ -2,21 +2,20 @@
 
 ## Now
  
-- Get `PathTo` into templates as the real `pathto`
-
 ## Next
 
 
 ## Soon
 
-- Copy static assets to destination
 - toc
 - View lookup as a service
 - ChainMap implementation
-- Make `make_page_context` into a factory
 
 ## Eventually
 
+- Bring back nullster
+- Copy static assets to destination
+- Make `make_page_context` into a factory
 - Register a StaticDest because Sphinx wants _static instead of static
 - Nullster
 - Goku
@@ -36,3 +35,4 @@
 - TemplateBridge, html-page-context, and builder-init 
 - Move `protocols.py` stuff into `models.py`
 - Get rid of `themester/sphinx/resource.py`
+- Get `PathTo` into templates as the real `pathto`

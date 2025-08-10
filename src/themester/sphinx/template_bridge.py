@@ -27,7 +27,7 @@ class ThemesterBridge(BuiltinTemplateLoader):
         try:
             view = container.get(View)
         except ServiceNotFoundError:
-            # Fall back to regular Sphinx-Jinja rendering
+            # Fall back to regular Sphinx-Jinja rendering.
             return super(ThemesterBridge, self).render(template_or_viewpage, context)
 
         # Class-based view vs. function view

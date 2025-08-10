@@ -22,3 +22,4 @@ def test_setup(app: SphinxTestApp):
 def test_index(page: str) -> None:
     """Ensure basics are in the page."""
     assert "Hello Themester" in page
+    assert 'href="search.html"' in page

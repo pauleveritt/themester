@@ -7,6 +7,9 @@ Running log of notes to later turn into docs.
 I'll start by moving stuff back into being self-contained in `themester.sphinx` and not focus for now on portable stuff.
 Starting with `models.py` and `services.py`.
 
+Took the big step of replacing the existing `pathto` with my service-based `PathTo`. This was done in the
+`html-page-context` event handler.
+
 ## Aug 9 2025
 
 Adam Turner messaged me, interested in the registry and view ideas. Let's bring `themester-sphinx` back in and get

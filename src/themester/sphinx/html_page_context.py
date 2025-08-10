@@ -8,6 +8,7 @@ from sphinx.application import Sphinx
 from svcs import Container
 
 from themester.sphinx.models import PageContext, Rellink
+from themester.sphinx.services import PathTo
 
 
 def make_page_context(
@@ -73,11 +74,12 @@ def setup(
     context["container"] = container
     app.env.current_document["container"] = container
 
-    # Start pulling pieces out of the page context that we might want
-    # as isolated services in svcs.
-    container.register_local_value(document, doctree)
+    # Replace some Jinja2 helpers with services-based re-implementations.
+    context["pathto"] = container.get(PathTo)
 
-    # Put the page context in the registry
+    # Make our own PageContext object and put in the registry. We
+    # can't just use context and a TypedDict, as the type is always
+    # dict.
     page_context = make_page_context(
         context=context,
         pagename=pagename,

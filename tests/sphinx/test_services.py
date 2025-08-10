@@ -1,34 +1,10 @@
-from dataclasses import dataclass, field
-
-from sphinx.builders import Builder
-
-from themester.services import BuilderConfig, TargetUri, RelativeUri, PathTo
-
-# # in the singlehtml builder, default_baseuri still contains an #anchor
-# # part, which relative_uri doesn't really like...
-# default_baseuri = default_baseuri.rsplit('#', 1)[0]
-#
-# # From the configuration
-# allow_sharp_as_current_path = True
-#
-#
-# def pathto(
-#         pagename: str,
-#         otheruri: str,
-#         resource: bool = False,
-#         baseuri: str = default_baseuri,
-# ) -> str:
-#     if resource and '://' in otheruri:
-#         # allow non-local resources given by scheme
-#         return otheruri
-#     elif not resource:
-#         otheruri = self.get_target_uri(otheruri)
-#     uri = relative_uri(baseuri, otheruri) or '#'
-#     if uri == '#' and not self.allow_sharp_as_current_path:
-#         uri = baseuri
-#     return uri
+from dataclasses import dataclass
 
 import pytest
+from sphinx.builders import Builder
+
+from themester.sphinx.models import PageContext
+from themester.sphinx.services import BuilderConfig, TargetUri, RelativeUri, PathTo
 
 
 @pytest.fixture
@@ -103,6 +79,10 @@ def test_relative_uri():
 def test_pathto(builder, builder_config):
     """Check all of Sphinx's policies for path handling."""
 
+    @dataclass
+    class FakePageContext:
+        pagename: str = "fakepage.html"
+
     container = {
         TargetUri: TargetUri(
             container={
@@ -111,7 +91,8 @@ def test_pathto(builder, builder_config):
         ),
         RelativeUri: RelativeUri(container={"Builder": builder}),
         Builder: builder,
+        PageContext: FakePageContext(),
     }
     path_to = PathTo(container=container)
-    result = path_to(pagename="somedocname", otheruri="someotheruri")
+    result = path_to(otheruri="someotheruri")
     assert result == "someotheruri.html"
