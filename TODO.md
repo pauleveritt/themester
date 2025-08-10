@@ -2,13 +2,15 @@
 
 ## Now
 
-- Remove all the Hopscotch stuff that will never get used, sigh
 
 ## Next
 
-- Get `PathTo` into templates as the real `pathto`
+- Move `protocols.py` stuff into `models.py`
+- Get rid of `themester/sphinx/resource.py`
+- Make `make_page_context` into a factory
 - `SphinxConfig` as a service
 - Adam's `PageContext`
+- Get `PathTo` into templates as the real `pathto`
 
 ## Soon
 
@@ -30,6 +32,8 @@
 - Docs
 - Predicate-based lookup
 - Layout Themes
+- Use the `uv` backend instead of `hatchling`
+- Remove all the Hopscotch stuff that will never get used, sigh
 
 ## Done
 
